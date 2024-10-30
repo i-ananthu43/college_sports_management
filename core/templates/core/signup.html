@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+	<title>CEP - SPORTS HUB</title>
+	<!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 11]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="">
+	<meta name="author" content="Phoenixcoded" />
+	<!-- Favicon icon -->
+	<link rel="icon" href="{% static 'assets/images/favicon.ico' %}" type="image/x-icon">
+
+	<!-- vendor css -->
+	<link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+</head>
+
+<body>
+	<!-- [ auth-signup ] start -->
+	<div class="auth-wrapper">
+		<div class="auth-content">
+			<div class="card">
+				<div class="row align-items-center ">
+					<div class="col-md-20">
+						<div class="card-body">
+							<h4 class="text-center">CEP SPORTS</h4>
+              <hr>
+							<h2 class="text-center">Signup</h2>
+							<form method="POST">
+								{% csrf_token %}
+								<table class="table table-borderless">
+									{% for field in form %}
+										<tr>
+											<td>
+												<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+											</td>
+											<td>
+												{{ field }}
+												{% if field.help_text %}
+													<small class="form-text text-muted">{{ field.help_text }}</small>
+												{% endif %}
+												{% for error in field.errors %}
+													<div class="text-danger">{{ error }}</div>
+												{% endfor %}
+											</td>
+										</tr>
+									{% endfor %}
+								</table>
+								
+								<div class="form-group text-center">
+									<button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+								</div>
+                <p class="mb-0 text-center">Already have an account? <a href="{% url "login" %}" class="f-w-400">login</a></p>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ auth-signup ] end -->
+
+	<!-- Required Js -->
+	<script src="{% static 'assets/js/vendor-all.min.js' %}"></script>
+	<script src="{% static 'assets/js/plugins/bootstrap.min.js' %}"></script>
+	<script src="{% static 'assets/js/pcoded.min.js' %}"></script>
+</body>
+
+</html>

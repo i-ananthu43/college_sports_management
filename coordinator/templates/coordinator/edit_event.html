@@ -1,0 +1,51 @@
+{% extends "coordinator/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Manage Events</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
+                                <li class="breadcrumb-item"><a href="#!">assigned events</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <div class="col-sm-12">
+              <div class="card">
+                  <div class="card-header">
+                    
+                    <div class="container">
+                        <h2>Edit Event: "{{ event.sport_event.title }}"</h2>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}  <!-- Renders the form fields -->
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                    </div>
+                    
+              </div> 
+          </div> 
+            <!-- Main Content Goes Here -->
+
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Participation</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .certificate { border: 5px solid #000; padding: 20px; margin: 20px; }
+        h1 { color: #4CAF50; }
+        .student-name { font-size: 24px; font-weight: bold; }
+        .event-name { font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <h1>Certificate of Participation</h1>
+        <p>This is to certify that</p>
+        <div class="student-name">{{ certificate.student.full_name }}</div>
+        <p>has participated in</p>
+        <div class="event-name">{{ certificate.event.title }}</div>
+        <p>Issued on: {{ certificate.date_issued }}</p>
+    </div>
+</body>
+</html>

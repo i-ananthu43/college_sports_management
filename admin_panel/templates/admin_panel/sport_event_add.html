@@ -1,0 +1,86 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Manage Events</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url "admin_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">manage events</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="col-md-6">
+                    <h5 class="mt-4">Add Sport Event</h5>
+                    <hr>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><label for="title">Title</label></td>
+                                <td><input type="text" name="title" class="form-control" value="title" required></td>
+                            </tr>
+                            <tr>
+                                <td><label for="description">Description</label></td>
+                                <td><textarea name="description" class="form-control" value="description " required></textarea></td>
+
+                            </tr>
+                            <tr>
+                                <td><label for="date">Date</label></td>
+                                <td><input type="date" name="date" class="form-control" value="date" required></td>
+                            </tr>
+                            <tr>
+                                <td><label for="time">Time</label></td>
+                                <td><input type="time" name="time" class="form-control" required></td>
+                            </tr>
+                            <tr>
+                                <td><label for="location">Location</label></td>
+                                <td><input type="text" name="location" class="form-control" value="location" required></td>
+                            </tr>
+                            <tr>
+                                <td><label for="sport_type">Sport Type</label></td>
+                                <td><input type="text" name="sport_type" class="form-control" value="sport_type" required></td>
+                            </tr>
+                            <tr>
+                                <td><label for="coordinator">Coordinator</label></td>
+                                <td>
+                                    <select name="coordinator" class="form-control" required>
+                                        {% for coordinator in coordinators %}
+                                            <option value="{{ coordinator.id }}">{{ coordinator.user.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center">
+                                    <button type="submit" class="btn btn-primary">Add Sport Event</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                
+          </div> 
+            <!-- Main Content Goes Here -->
+
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+{% endblock content %}

@@ -1,0 +1,93 @@
+{% extends "coordinator/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
+                            <li class="breadcrumb-item"><a href="#!">assigned events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+          <div class="card">
+              <div class="card-header">
+                <h1 class="mb-4">Assigned Events</h1>
+
+<!-- Add New Event Button -->
+<div class="mb-3">
+    <a href="{% url 'sport_event_add' %}" class="btn btn-primary">Add New Event</a>
+</div>
+                    
+                        {% if events %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Event Title</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>  <!-- Added Actions header -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                        <tr>
+                                            <td>{{ event.sport_event.title }}</td>  <!-- Accessing the title from the related SportEvent -->
+                                            <td><i class="fa fa-map-marker"></i> {{ event.sport_event.location }}</td>  <!-- Accessing the location -->
+                                            <td>{{ event.sport_event.date }}</td>  <!-- Accessing the date -->
+                                            <td>{{ event.sport_event.time }}</td>  <!-- Accessing the time -->
+                                            <td>{{ event.sport_event.description }}</td>  <!-- Accessing the description -->
+                                            <td>
+                                                <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>  <!-- Link to edit the event -->
+                                            </td>
+                                            <td>
+                                                {% if request.session.fixtures_generated %}
+                                                    <a href="{% url 'view_fixtures' event_id=event.sport_event.id %}" class="btn btn-primary">View Fixtures</a>
+                                                {% else %}
+                                                    <a href="#" class="btn btn-primary">Generate Fixture</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No assigned events available.</p>
+                        {% endif %}
+          </div> 
+      </div> 
+        <!-- Main Content Goes Here -->
+
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+<script>
+    function confirmDelete(button) {
+        const confirmAction = confirm("Are you sure you want to delete this coordinator?");
+        if (confirmAction) {
+            // If the user confirms, submit the form
+            button.closest('form').submit();
+        }
+    }
+    </script>
+
+
+{% endblock content %}
+
+    

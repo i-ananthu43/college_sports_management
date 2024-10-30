@@ -1,0 +1,105 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+ <!-- [ Main Content ] start -->
+ <div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "admin_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">manage events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+          <div class="card">
+              <div class="card-header">
+                <div class="col-md-6">
+                  <h1 class="mb-4">Edit Sport Event</h1>
+                  <form method="POST">
+                      {% csrf_token %}
+                      <table class="table table-borderless">
+                          <tr>
+                              <td><label for="title">Title:</label></td>
+                              <td>
+                                  <input type="text" id="title" name="title" class="form-control" placeholder="Event Title" value="{{ event.title }}" required>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td><label for="description">Description:</label></td>
+                              <td>
+                                  <textarea id="description" name="description" class="form-control" placeholder="Event Description" rows="4" required>{{ event.description }}</textarea>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td><label for="date">Date:</label></td>
+                              <td>
+                                  <input type="date" id="date" name="date" class="form-control" value="{{ event.date }}" required>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td><label for="time">Time:</label></td>
+                              <td>
+                                  <input type="time" id="time" name="time" class="form-control" value="{{ event.time }}" required>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td><label for="location">Location:</label></td>
+                              <td>
+                                  <input type="text" id="location" name="location" class="form-control" placeholder="Event Location" value="{{ event.location }}" required>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td><label for="sport_type">Sport Type:</label></td>
+                              <td>
+                                  <input type="text" id="sport_type" name="sport_type" class="form-control" placeholder="Type of Sport" value="{{ event.sport_type }}" required>
+                              </td>
+                          </tr>
+                          <tr>
+                            <td><label for="coordinator">Coordinator:</label></td>
+                            <td>
+                                <select id="coordinator" name="coordinator" class="form-control" required>
+                                    <option value="">Select a Coordinator</option>  <!-- Placeholder option -->
+                                    {% for coordinator in coordinators %}
+                                        <option value="{{ coordinator.id }}" {% if coordinator.user.id == event.coordinator.id %}selected{% endif %}>
+                                            {{ coordinator.user.username }}  <!-- Accessing username from the User instance -->
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        
+                        </tr>
+                        
+                          <tr>
+                              <td colspan="2" class="text-center">
+                                  <button type="submit" class="btn btn-primary">Update Event</button>
+                              </td>
+                          </tr>
+                      </table>
+                  </form>
+              </div>
+              
+          </div> 
+      </div> 
+        <!-- Main Content Goes Here -->
+
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+
+
+
+{% endblock content %}
+
+   

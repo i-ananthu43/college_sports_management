@@ -1,0 +1,104 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Admin Dashboard</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url "admin_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="{% url "coordinators_list" %}">coordinators list</a></li>
+                                <li class="breadcrumb-item"><a href="#">Add coordinator</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Add Coordinator</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="container">
+                            {% if messages %}
+                            <div id="alert-message" class="alert alert-info alert-dismissible fade show" role="alert">
+                                {% for message in messages %}
+                                    <div>{{ message }}</div>
+                                {% endfor %}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form method="post" class="needs-validation" novalidate>
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" name="username" class="form-control" id="username" required>
+                                        <div class="invalid-feedback">Please enter a username.</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" name="password" class="form-control" id="password" value="password" required>
+                                        <div class="invalid-feedback">Please enter a password.</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" id="email" required>
+                                        <div class="invalid-feedback">Please enter a valid email.</div>
+                                    </div>
+                                    <div class="mb-2 text-center">
+                                        <button type="submit" class="btn btn-primary">Add Coordinator</button>
+                                    </div>
+                                </form>
+                            </div>         
+                        </div>     
+                    </div> 
+                </div> 
+            </div> 
+          
+            <!-- Main Content Goes Here -->
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Display the alert message
+            const alertMessage = document.createElement('div');
+            alertMessage.className = 'alert alert-info alert-dismissible fade show';
+            alertMessage.role = 'alert';
+            alertMessage.innerHTML = 'Coordinator added successfully. You will be redirected shortly.';
+            document.querySelector('.container').insertBefore(alertMessage, document.querySelector('#add-coordinator-form'));
+
+            // Use Bootstrap's alert dismiss function
+            setTimeout(() => {
+                // After 5 seconds, remove the alert and submit the form
+                alertMessage.classList.remove('show');
+                alertMessage.classList.add('fade');
+                setTimeout(() => alertMessage.remove(), 150); // Remove the alert after fade out
+                document.getElementById('add-coordinator-form').submit(); // Submit the form
+            }, 5000);
+
+            return false; // Prevent default form submission until we are ready
+        }
+    </script>
+{% endblock content %}

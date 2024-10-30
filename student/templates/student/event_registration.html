@@ -1,0 +1,69 @@
+{% extends "student/base.html" %}
+    <!-- [ Header ] end -->
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "student_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">Upcoming Events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                  <h2 class="mb-4 text-center">Register for Event</h1>
+                                    <br>
+                           
+
+                        <h4 class="event-title text-center">{{ event.title }}</h4>
+                        <p class="text-center"><strong>Date:</strong> {{ event.date|date:"F j, Y" }}</p>
+                        <p class="text-center"><strong>Location:</strong> {{ event.location }}</p>
+                        <hr>
+
+
+
+                        <form method="POST" class="text-center">
+                            {% csrf_token %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Full Name:</strong></td>
+                                            <td>{{ form.full_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Course:</strong></td>
+                                            <td>{{ form.course }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Branch:</strong></td>
+                                            <td>{{ form.branch }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>House:</strong></td>
+                                            <td>{{ form.house }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Now</button>
+                        </form>
+
+        <!-- Main Content Goes Here -->
+    </div>
+</div>
+{% endblock content %}
+    <!-- [ Main Content ] start -->
+    

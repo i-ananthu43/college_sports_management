@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Fixture</title>
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+</head>
+<body>
+    <section id="main-content">
+        <section class="wrapper site-min-height">
+            <h3>Generate Fixture for Event: {{ event.name }}</h3>
+
+            <div class="row mt">
+                <div class="col-lg-12">
+                    <!-- Display success or error messages -->
+                    {% if messages %}
+                        <div class="message-container">
+                            {% for message in messages %}
+                                <div class="alert {{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Button to Generate Fixtures -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Generate Round-Robin Fixtures</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Display Generated Fixtures -->
+                    {% if fixtures %}
+                        <h4>Generated Fixtures</h4>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Round</th>
+                                    <th>Home Student</th>
+                                    <th>Away Student</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fixture in fixtures %}
+                                    <tr>
+                                        <td>{{ fixture.round }}</td>
+                                        <td>{{ fixture.home_student.full_name }}</td>
+                                        <td>{{ fixture.away_student.full_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No fixtures generated yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+</html>
