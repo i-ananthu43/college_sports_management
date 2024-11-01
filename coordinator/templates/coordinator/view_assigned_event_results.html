@@ -1,0 +1,171 @@
+{% extends "coordinator/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
+                            <li class="breadcrumb-item"><a href="#!">results</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+          <div class="card">
+              <div class="card-header text-center">
+                {% for result in event_results %}
+                <hr>
+                <br>
+                <h2 class="text-center mb-4">{{ result.event.title }} Results</h2>
+
+                    <table class="table table-bordered table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Prize</th>
+                                <th>Full Name</th>
+                                <th>Course</th>
+                                <th>Branch</th>
+                                <th>House</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Winner</td>
+                                <td>
+                                    {% if result.first_prize %}
+                                        {{ result.first_prize.full_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.first_prize %}
+                                        {{ result.first_prize.course }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.first_prize %}
+                                        {{ result.first_prize.branch }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.first_prize and result.first_prize.house %}
+                                        {{ result.first_prize.house.name }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Runner-up</td>
+                                <td>
+                                    {% if result.second_prize %}
+                                        {{ result.second_prize.full_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.second_prize %}
+                                        {{ result.second_prize.course }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.second_prize %}
+                                        {{ result.second_prize.branch }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.second_prize and result.second_prize.house %}
+                                        {{ result.second_prize.house.name }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Third Place</td>
+                                <td>
+                                    {% if result.third_prize %}
+                                        {{ result.third_prize.full_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.third_prize %}
+                                        {{ result.third_prize.course }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.third_prize %}
+                                        {{ result.third_prize.branch }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if result.third_prize and result.third_prize.house %}
+                                        {{ result.third_prize.house.name }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endfor %}
+
+            </div> 
+        </div> 
+      </div> 
+        <!-- Main Content Goes Here -->
+
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+<script>
+    function confirmDelete(button) {
+        const confirmAction = confirm("Are you sure you want to delete this coordinator?");
+        if (confirmAction) {
+            // If the user confirms, submit the form
+            button.closest('form').submit();
+        }
+    }
+    </script>
+
+    <script src="{% static "https://code.jquery.com/jquery-3.5.1.min.js" %} "></script>
+    <script src="{% static " https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" %} "></script>
+{% endblock content %}
+
+    
+
+
+
+<div class="container mt-5">
+   
+</div>
+

@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from admin_panel.models import SportEvent
 from django.contrib.auth.decorators import login_required
+from coordinator.models import Result
 from core.models import CoreStudent
 from student.forms import EventRegistrationForm
 from student.models import EventRegistration
@@ -62,6 +63,11 @@ def event_registration(request, event_id):
                 messages.error(request, 'You can only register for a maximum of 4 events.')
                 return render(request, 'student/event_registration.html', {'form': form, 'event': event})
 
+            # Update the student's house field in CoreStudent model
+            selected_house = form.cleaned_data['house']
+            student.house = selected_house
+            student.save()
+
             # Create registration for the event
             registration = EventRegistration(
                 full_name=student.full_name,
@@ -69,18 +75,19 @@ def event_registration(request, event_id):
                 branch=student.branch,
                 event=event,
                 student=student,
-                house=form.cleaned_data['house'],  # Get the house from the form
+                house=selected_house,  # Save the house in the registration as well
             )
             registration.save()
 
             messages.success(request, 'Successfully registered for the event!')
             return redirect('upcoming_events')
     else:
-        # Pre-fill the form with student's data
+        # Pre-fill the form with student's data, including the house if it exists
         form = EventRegistrationForm(initial={
             'full_name': student.full_name,
             'course': student.course,
             'branch': student.branch,
+            'house': student.house,  # Pre-fill with existing house if available
         })
 
     context = {
@@ -110,3 +117,25 @@ def view_all_events(request):
         'events': events,
     }
     return render(request, 'student/view_all_events.html', context)
+
+@login_required
+def view_results(request):
+    # Get the current logged-in student
+    student = get_object_or_404(CoreStudent, user=request.user)
+
+    # Get all event registrations for this student
+    registered_events = EventRegistration.objects.filter(student=student)
+
+    # Initialize a list to hold the results
+    results = []
+
+    # Loop through each registered event and fetch its result
+    for registration in registered_events:
+        result = Result.objects.filter(sport_event=registration.event).first()
+        if result:
+            results.append({
+                'event': registration.event,
+                'result': result
+            })
+
+    return render(request, 'student/view_results.html', {'results': results})

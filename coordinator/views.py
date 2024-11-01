@@ -10,7 +10,7 @@ from coordinator.forms import  SportEventForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from coordinator.models import MatchFixture, Result
+from coordinator.models import House, MatchFixture, Result
 from core.models import CoreStudent
 from student.models import Certificate, EventRegistration
  # Ensure that the user is logged in
@@ -278,10 +278,13 @@ def select_winners(request, event_id):
     # Ensure the event type is "Athletics"
     if event.sport_type != "Athletics":
         messages.error(request, "This option is only available for athletics events.")
-        return redirect('manage_events')  # Adjust redirection as needed
+        return redirect('manage_events')
 
     # Fetch registered students related to the given event_id
     registered_students = EventRegistration.objects.filter(event_id=event.id)
+
+    # Check if winners have already been selected for this event
+    result = Result.objects.filter(sport_event=event).first()
 
     if request.method == "POST":
         winner_id = request.POST.get("winner")
@@ -289,22 +292,56 @@ def select_winners(request, event_id):
         third_place_id = request.POST.get("third_place")
 
         if winner_id and runner_up_id and third_place_id:
-            # Create a Result record with selected students and event title
-            Result.objects.create(
-                sport_event=event,
-                title=event.title,
-                first_prize_id=winner_id,
-                second_prize_id=runner_up_id,
-                third_prize_id=third_place_id,
-                date=event.date
-            )
-            messages.success(request, "Winners have been selected and saved successfully!")
-            return redirect('event_detail', event_id=event.id)
+            if result:  # If results already exist, update them
+                result.first_prize = winner_id
+                result.second_prize = runner_up_id
+                result.third_prize = third_place_id
+                result.save()
+                messages.success(request, "Results have been updated successfully!")
+            else:  # If results do not exist, create a new entry
+                Result.objects.create(
+                    sport_event=event,
+                    title=event.title,
+                    first_prize=winner_id,
+                    second_prize=runner_up_id,
+                    third_prize=third_place_id,
+                    date=event.date
+                )
+                messages.success(request, "Winners have been selected and saved successfully!")
+
+            return redirect('view_assigned_event_results')
         else:
             messages.error(request, "Please select all three placements.")
 
     return render(request, 'coordinator/select_winners.html', {
         'event': event,
         'registered_students': registered_students,
-        'event_id': assigned_event.sport_event.id  # Provide event_id for use in the template
+        'event_id': assigned_event.sport_event.id,
+        'result': result  # Pass existing result to the template
     })
+
+def view_assigned_event_results(request):
+    
+    coordinator = request.user.coordinator  # Assuming you have a related Coordinator model
+    assigned_events = CoordinatorAssignedEvent.objects.filter(coordinator=coordinator)
+    
+    # Fetch results and related student information for assigned events
+    results = Result.objects.filter(
+        sport_event__in=assigned_events.values_list('sport_event', flat=True)
+    ).prefetch_related('sport_event')
+    
+    # Build a list with detailed student information for each result
+    event_results = []
+    for result in results:
+        event_result = {
+            'event': result.sport_event,
+            'first_prize': CoreStudent.objects.filter(id=result.first_prize).first(),
+            'second_prize': CoreStudent.objects.filter(id=result.second_prize).first(),
+            'third_prize': CoreStudent.objects.filter(id=result.third_prize).first(),
+        }
+        event_results.append(event_result)
+
+    context = {
+        'event_results': event_results,
+    }
+    return render(request, 'coordinator/view_assigned_event_results.html', context)

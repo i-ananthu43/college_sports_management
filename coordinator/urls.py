@@ -15,4 +15,6 @@ urlpatterns = [
     path('event/<int:event_id>/fixture/', views.generate_fixture_view, name='match_fixture'),
     path('match/<int:match_id>/enter_score/', views.enter_score_view, name='enter_score'),
     path('select_winners/<int:event_id>/', views.select_winners, name='select_winners'),
+    
+    path('coordinator/view-results/', views.view_assigned_event_results, name='view_assigned_event_results'),
 ]

@@ -20,6 +20,7 @@
     <link rel="icon" href="{% static 'assets/images/favicon.ico' %}" type="image/x-icon">
 
     <!-- vendor css -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
 </head>
 <body class="">
@@ -60,7 +61,7 @@
                             <li><a href="{% url "manage_events" %}">Manage Events</a></li>
                             <li><a href="{% url "view_assigned_events" %}">Registered Students</a></li>
                 
-                            <li><a href="#">View Fixtures</a></li>
+                            <li><a href="{% url "view_assigned_event_results" %}">View Results</a></li>
                         </ul>
 
                     </li>
