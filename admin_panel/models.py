@@ -1,19 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class SportEvent(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    date = models.DateField()
-    time = models.TimeField()
-    location = models.CharField(max_length=255)
-    sport_type = models.CharField(max_length=50)
-    remarks = models.TextField(blank=True, null=True)
-    coordinator = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
 class Coordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField()
@@ -23,6 +10,21 @@ class Coordinator(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class SportEvent(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateField()
+    time = models.TimeField()
+    location = models.CharField(max_length=255)
+    sport_type = models.CharField(max_length=50)
+    remarks = models.TextField(blank=True, null=True)
+    coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
 
 class CoordinatorAssignedEvent(models.Model):
     coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)

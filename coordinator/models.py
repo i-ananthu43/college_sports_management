@@ -19,3 +19,24 @@ class House(models.Model):
 
     def __str__(self):
         return self.name
+    
+class MatchFixture(models.Model):
+    event = models.ForeignKey(SportEvent, on_delete=models.CASCADE)
+    student_1 = models.ForeignKey(CoreStudent, related_name='match_student_1', on_delete=models.CASCADE)
+    student_2 = models.ForeignKey(CoreStudent, related_name='match_student_2', on_delete=models.CASCADE, null=True)
+    round_number = models.IntegerField()
+    student_1_score = models.IntegerField(null=True, blank=True)  # For storing score of student 1
+    student_2_score = models.IntegerField(null=True, blank=True)  # For storing score of student 2
+    winner = models.ForeignKey(CoreStudent, related_name='winner_matches', on_delete=models.SET_NULL, null=True)
+    is_finalized = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.student_1} vs {self.student_2} - Round {self.round_number}"
+    
+class Result(models.Model):
+    sport_event = models.ForeignKey(SportEvent, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    first_prize = models.CharField(max_length=100)  # Use CharField for the winner's name or ID
+    second_prize = models.CharField(max_length=100)  # Use CharField for runner-up's name or ID
+    third_prize = models.CharField(max_length=100)  # Use CharField for third place's name or ID
+    date = models.DateField(auto_now_add=True)

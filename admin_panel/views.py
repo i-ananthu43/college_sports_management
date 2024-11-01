@@ -159,8 +159,7 @@ def sport_event_add(request):
     if request.method == 'POST':
         try:
             coordinator_id = request.POST['coordinator']
-            coordinator = Coordinator.objects.get(id=coordinator_id)
-            user = coordinator.user  # Get associated User
+            coordinator = Coordinator.objects.get(id=coordinator_id)  # Fetch the Coordinator instance
 
             # Create a new sport event
             event = SportEvent(
@@ -170,7 +169,7 @@ def sport_event_add(request):
                 time=request.POST['time'],
                 location=request.POST['location'],
                 sport_type=request.POST['sport_type'],
-                coordinator=user  # Use the User instance directly
+                coordinator=coordinator  # Assign Coordinator instance, not User instance
             )
             event.save()
 

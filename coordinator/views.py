@@ -1,5 +1,6 @@
 
-from itertools import combinations
+import logging
+import math
 import random
 from django.shortcuts import redirect, render , get_object_or_404
 
@@ -9,6 +10,7 @@ from coordinator.forms import  SportEventForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from coordinator.models import MatchFixture, Result
 from core.models import CoreStudent
 from student.models import Certificate, EventRegistration
  # Ensure that the user is logged in
@@ -136,3 +138,159 @@ def view_events(request):
     events = SportEvent.objects.all()  # Fetch all events
 
     return render(request, 'coordinator/view_events.html', {'events': events})
+
+logger = logging.getLogger(__name__)
+
+def generate_fixture_view(request, event_id):
+    event = get_object_or_404(SportEvent, id=event_id)
+    sport_type = event.sport_type.lower()
+
+    if sport_type == "athletics":
+        return render(request, 'coordinator/match_fixture.html', {
+            'event': event,
+            'message': 'This is an athletics event. Fixture generation is not required.',
+        })
+
+    elif sport_type == "sports":
+        registered_students = list(CoreStudent.objects.filter(eventregistration__event=event))
+        num_participants = len(registered_students)
+
+        if num_participants < 4:
+            return render(request, 'coordinator/match_fixture.html', {
+                'event': event,
+                'message': 'At least 4 participants are required to generate fixtures.',
+            })
+
+        rounds = int(math.log2(num_participants))
+        matches = []
+
+        for round_number in range(1, rounds + 1):
+            if MatchFixture.objects.filter(event=event, round_number=round_number).exists():
+                continue
+
+            random.shuffle(registered_students)
+            round_matches = []
+            
+            for i in range(0, len(registered_students) - 1, 2):
+                match = MatchFixture.objects.create(
+                    event=event,
+                    student_1=registered_students[i],
+                    student_2=registered_students[i + 1],
+                    round_number=round_number
+                )
+                round_matches.append(match)
+                matches.append(match)
+
+            if len(registered_students) % 2 != 0:
+                match = MatchFixture.objects.create(
+                    event=event,
+                    student_1=registered_students[-1],
+                    student_2=None,
+                    round_number=round_number
+                )
+                round_matches.append(match)
+                matches.append(match)
+
+            registered_students = [match.winner for match in round_matches if match.winner]
+
+        logger.info("Matches created: %s", matches)
+        return render(request, 'coordinator/match_fixture.html', {
+            'event': event,
+            'matches': matches,
+        })
+
+    return render(request, 'coordinator/match_fixture.html', {
+        'event': event,
+        'message': 'Invalid sport type. Fixture generation is only available for sports events.',
+    })
+
+
+
+
+
+
+def enter_score_view(request, match_id):
+
+    match = get_object_or_404(MatchFixture, id=match_id)
+    
+    if request.method == 'POST':
+        try:
+            # Assuming you're getting scores from POST data
+            student_1_score = request.POST.get('student_1_score')
+            student_2_score = request.POST.get('student_2_score')
+
+            # Check if scores are provided and convert to int
+            if student_1_score is None or student_2_score is None:
+                return render(request, 'coordinator/enter_score.html', {
+                    'match': match,
+                    'error': 'Both scores must be provided.',
+                })
+
+            # Convert scores to integers
+            student_1_score = int(student_1_score)
+            student_2_score = int(student_2_score)
+
+            # Save scores to the match
+            match.student_1_score = student_1_score
+            match.student_2_score = student_2_score
+            
+            # Determine and set the winner based on scores
+            if student_1_score > student_2_score:
+                match.winner = match.student_1
+            elif student_2_score > student_1_score:
+                match.winner = match.student_2
+            else:
+                match.winner = None  # Tie case, handle as needed
+
+            match.save()
+
+            return redirect('match_fixture', event_id=match.event.id)
+
+        except ValueError:
+            return render(request, 'coordinator/enter_score.html', {
+                'match': match,
+                'error': 'Invalid score input. Please enter valid integers.',
+            })
+
+    return render(request, 'coordinator/enter_score.html', {'match': match})
+
+def select_winners(request, event_id):
+    event = get_object_or_404(SportEvent, id=event_id)
+
+    if event.sport_type != "Athletics":
+        messages.error(request, "This option is only available for athletics events.")
+        return redirect('some_view')  # Adjust redirection
+
+    registered_students = EventRegistration.objects.filter(event=event)
+
+    if request.method == "POST":
+        winner_id = request.POST.get("winner")
+        runner_up_id = request.POST.get("runner_up")
+        third_place_id = request.POST.get("third_place")
+
+        if winner_id and runner_up_id and third_place_id:
+            # Create a Result record with the selected students and event title
+            Result.objects.create(
+                sport_event=event,
+                title=event.title,  # Using title from SportEvent
+                first_prize_id=winner_id,
+                second_prize_id=runner_up_id,
+                third_prize_id=third_place_id,
+                date=event.date
+            )
+            messages.success(request, "Winners have been selected and saved successfully!")
+            return redirect('event_detail', event_id=event.id)  # Adjust redirection as needed
+        else:
+            messages.error(request, "Please select all three placements.")
+
+    return render(request, 'coordinator/select_winners.html', {
+        'event': event,
+        'registered_students': registered_students
+    })
+
+
+
+
+
+
+

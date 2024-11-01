@@ -1,0 +1,14 @@
+<!-- templates/coordinator/enter_score.html -->
+
+<h2>Enter Score for {{ match.student_1.full_name }} vs {{ match.student_2.full_name }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label>{{ match.student_1.full_name }}'s Score:</label>
+    <input type="number" name="student_1_score" required>
+    
+    <label>{{ match.student_2.full_name }}'s Score:</label>
+    <input type="number" name="student_2_score" required>
+    
+    <button type="submit">Submit Score</button>
+</form>

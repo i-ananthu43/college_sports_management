@@ -53,7 +53,7 @@
             <td>{{ event.time }}</td>
             <td>{{ event.location }}</td>
             <td>{{ event.sport_type }}</td>
-            <td>{{ event.coordinator.username }}</td> <!-- Display Coordinator's Username -->
+            <td>{{ event.coordinator.user.username }}</td> <!-- Display Coordinator's Username -->
             <td>
                 <a href="{% url 'sport_event_edit' event.id %}" class="btn btn-sm btn-warning">Edit</a>
                 <form action="{% url 'sport_event_delete' event.id %}" method= "post" style="display:inline;">
