@@ -54,12 +54,11 @@
                                             </td>
                                             <td>
                                                 {% if event.sport_type == "Sports" %}
-                                                    {% if request.session.fixtures_generated %}
-                                                        <a href="#" class="btn btn-primary">View Fixtures</a>
-                                                    {% else %}
-                                                        <a href="{% url 'match_fixture' event.id %}" class="btn btn-primary">Generate Fixture</a>
-                                                    {% endif %}
+                                                   
+                                                <a href="{% url 'match_fixture' event.id %}" class="btn btn-primary">Generate Fixture</a>
+
                                                 {% else %}
+                                               
                                                 <a href="{% url 'select_winners' event.id %}" class="btn btn-primary">Select Winners</a>
                                                 {% endif %}
                                             </td>

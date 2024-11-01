@@ -11,6 +11,7 @@ class CoreStudent(models.Model):
     branch = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15)
     year_of_study = models.IntegerField()
+    is_approved = models.BooleanField(default=False)  # New field for approval status
 
     def __str__(self):
         return self.full_name

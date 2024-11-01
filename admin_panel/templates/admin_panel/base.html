@@ -38,7 +38,7 @@
                     <div class="main-menu-header">
                         <img class="img-radius" src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="User-Profile-Image">
                         <div class="user-details">
-                            <div id="more-details">Admin<i class="fa fa-caret-down"></i></div>
+                            <div id="more-details">Admin</div>
                         </div>
                     </div>
                     <div class="collapse" id="nav-user-link">
@@ -118,7 +118,7 @@
                                     <div class="media">
                                         <img class="img-radius" src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="Generic placeholder image">
                                         <div class="media-body">
-                                            <p><strong>John Doe</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>5 min</span></p>
+                                            <p><strong>Admin</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>5 min</span></p>
                                             <p>New ticket Added</p>
                                         </div>
                                     </div>
@@ -138,16 +138,12 @@
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head">
                                 <img src="{% static 'assets/images/user/avatar-1.jpg' %}" class="img-radius" alt="User-Profile-Image">
-                                <span>John Doe</span>
+                                <span>Admin</span>
                                 <a href="{% url "home" %}" class="dud-logout" title="Logout">
-                                    <i class="feather icon-log-out"></i>
+                                  <i class="feather icon-log-out"></i>
                                 </a>
                             </div>
-                            <ul class="pro-body">
-                                <li><a href="user-profile.html" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
-                                <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li>
-                                <li><a href="auth-signin.html" class="dropdown-item"><i class="feather icon-lock"></i> Lock Screen</a></li>
-                            </ul>
+                        
                         </div>
                     </div>
                 </li>
@@ -163,6 +159,28 @@
       <script src="{% static 'assets/js/vendor-all.min.js' %}"></script>
       <script src="{% static 'assets/js/plugins/bootstrap.min.js' %}"></script>
       <script src="{% static 'assets/js/pcoded.min.js' %}"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prepare to show messages
+            const messages = JSON.parse(document.getElementById('messages').textContent || '[]');
+            
+            if (messages.length > 0) {
+                // Show the messages in an alert or a modal
+                messages.forEach(msg => {
+                    alert(msg); // Replace with a nicer modal if preferred
+                });
+            }
+        });
+    </script>
+    
+    <!-- Hidden element to store messages for JavaScript to access -->
+    <div id="messages" style="display: none;">
+        [
+            {% for message in messages %}
+                "{{ message|escapejs }}"{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ]
+    </div>
   </body>
   
   </html>

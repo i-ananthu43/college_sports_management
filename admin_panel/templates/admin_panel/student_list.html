@@ -23,45 +23,67 @@
         </div>
         <!-- [ breadcrumb ] end -->
         <div class="col-sm-12">
-          <div class="card">
-              <div class="card-header">
-                <h2 class="mt-5">Student List</h2>
-                <table class="table table-striped">
-                  
-                    <thead>
-                        <tr>
-                            <th>Full Name</th>
-                            <th>Register Number</th>
-                            <th>Email</th>
-                            <th>Username</th>
-                            <th>Course</th>
-                            <th>Branch</th>
-                            <th>Year of Study</th>
-                            <th>Phone Number</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        <tr>
-                            <td>{{ student.full_name }}</td>
-                            <td>{{ student.register_number }}</td>
-                            <td>{{ student.email }}</td>
-                            <td>{{ student.user.username }}</td>
-                            <td>{{ student.course }}</td>
-                            <td>{{ student.branch }}</td>
-                            <td>{{ student.year_of_study }}</td>
-                            <td>{{ student.phone_number }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center">No students found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-          </div> 
-      </div> 
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mt-5">Student List</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Register Number</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Course</th>
+                                <th>Branch</th>
+                                <th>Year of Study</th>
+                                <th>Phone Number</th>
+                                <th>Approval Status</th>  <!-- New column -->
+                                <th>Actions</th>           <!-- New column for actions -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.full_name }}</td>
+                                <td>{{ student.register_number }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.user.username }}</td>
+                                <td>{{ student.course }}</td>
+                                <td>{{ student.branch }}</td>
+                                <td>{{ student.year_of_study }}</td>
+                                <td>{{ student.phone_number }}</td>
+                                <td>
+                                    {% if student.is_approved %}
+                                        <span class="text-success">Approved</span>
+                                    {% else %}
+                                        <span class="text-danger">Not Approved</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not student.is_approved %}
+                                        <form method="POST" action="{% url 'approve_student' student.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST" action="{% url 'reject_student' student.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center">No students found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div> 
+            </div>
+        </div>
+        
         <!-- Main Content Goes Here -->
 
     </div>

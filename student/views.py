@@ -60,7 +60,7 @@ def event_registration(request, event_id):
 
             if registered_events_count >= 4:
                 messages.error(request, 'You can only register for a maximum of 4 events.')
-                return render(request, 'event_registration.html', {'form': form, 'event': event})
+                return render(request, 'student/event_registration.html', {'form': form, 'event': event})
 
             # Create registration for the event
             registration = EventRegistration(

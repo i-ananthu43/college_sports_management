@@ -7,10 +7,12 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 from admin_panel.models import Coordinator, CoordinatorAssignedEvent, SportEvent
 from coordinator.forms import SportEventForm
+from core.models import CoreStudent
 from .forms import CoordinatorForm  # type: ignore # Import your form
 
 
@@ -26,6 +28,23 @@ def manage_users(request):
     # Logic for managing users goes here
     return render(request,'admin_panel/manage_users.html')
 
+@login_required
+def approve_student(request, student_id):
+    if request.method == 'POST':
+        student = get_object_or_404(CoreStudent, id=student_id)
+        student.is_approved = True  # Set the approval status to True
+        student.save()
+        messages.success(request, "Student approved successfully.")
+        return redirect('student_list')  # Redirect to the page displaying the student list
+
+@login_required
+def reject_student(request, student_id):
+    if request.method == 'POST':
+        student = get_object_or_404(CoreStudent, id=student_id)
+        student.is_approved = False  # Set the approval status to False
+        student.save()
+        messages.success(request, "Student rejected successfully.")
+        return redirect('student_list')  # Redirect to the page displaying the student list
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +228,7 @@ def sport_event_edit(request, event_id):
             if 'coordinator' in request.POST:
                 coordinator_id = request.POST['coordinator']
                 coordinator = Coordinator.objects.get(id=coordinator_id)
-                event.coordinator = coordinator.user  # Use the User instance directly
+                event.coordinator = coordinator  # Use the User instance directly
 
             event.save()  # Save the updated event
             messages.success(request, 'Sport event updated successfully.')

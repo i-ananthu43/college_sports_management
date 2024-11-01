@@ -31,33 +31,47 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                login(request, user)
-
                 # Check if the user is a superuser (Admin)
                 if user.is_superuser:
+                    login(request, user)
                     return redirect('admin_dashboard')
 
                 # Check if the user is a coordinator
                 elif user.groups.filter(name='Coordinator').exists():
                     try:
-                # Attempt to retrieve the associated Coordinator instance
                         coordinator = Coordinator.objects.get(user=user)
 
-                # Check if the full_name is provided
                         if not coordinator.full_name:
                             return redirect('coordinator_details')  # Redirect to provide additional details
                         else:
+                            login(request, user)
                             return redirect('coordinator_dashboard')  # Redirect to the dashboard
 
                     except Coordinator.DoesNotExist:
                         messages.error(request, "Coordinator details not found. Please contact the administrator.")
-                        return redirect('login')  # Redirect to login
-                # Check if the user is a student (belongs to the student group)
+                        return redirect('login')
+
+                # Check if the user is a student
                 elif user.groups.filter(name='student').exists():
-                    return redirect('student_dashboard')  # Redirect to the student dashboard
+                    try:
+                        # Attempt to retrieve the associated CoreStudent instance
+                        core_student = CoreStudent.objects.get(user=user)
+
+                        # Check if the student account is approved
+                        if core_student.is_approved:
+                            login(request, user)
+                            return redirect('student_dashboard')  # Redirect to the student dashboard
+                        else:
+                            messages.error(request, "Your account is not yet approved by an administrator.")
+                            return redirect('login')
+
+                    except CoreStudent.DoesNotExist:
+                        messages.error(request, "Your account has not been set up as a student. Please contact the administrator.")
+                        return redirect('login')
 
                 # Default fallback if user type is unknown or no role matches
                 return redirect('home')
+
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -66,7 +80,6 @@ def login_view(request):
         form = AuthenticationForm()
 
     return render(request, 'core/login.html', {'form': form})
-
 
 def signup(request):
     if request.method == 'POST':
@@ -99,6 +112,7 @@ def signup(request):
                     branch=form.cleaned_data['branch'],
                     phone_number=form.cleaned_data['phone_number'],
                     year_of_study=form.cleaned_data['year_of_study'],
+                    is_approved=False  # Set to False for pending approval
                 )
                 core_student.save()
 
@@ -106,7 +120,7 @@ def signup(request):
                 student_group, created = Group.objects.get_or_create(name='student')
                 user.groups.add(student_group)
                 
-                messages.success(request, "Registration successful! You may log in now.")
+                messages.success(request, "Registration successful! Your account is pending approval.")
                 return redirect('login')  # Adjust to your login URL
 
             except Exception as e:
@@ -123,6 +137,7 @@ def signup(request):
         form = StudentSignupForm()
 
     return render(request, 'core/signup.html', {'form': form})
+
 
 def home(request):
     return render(request, 'core/index.html')

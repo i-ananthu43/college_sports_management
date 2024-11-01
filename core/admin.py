@@ -4,10 +4,17 @@ from django.contrib import admin
 from django.contrib import admin
 from .models import CoreStudent
 
-@admin.register(CoreStudent)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'email', 'course', 'branch', 'phone_number', 'year_of_study')  # Remove 'username'
-    
-    # You can add other configurations like search_fields, list_filter, etc.
-    
+class CoreStudentAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'email', 'is_approved')
+    actions = ['approve_students']
+
+    def approve_students(self, request, queryset):
+        for student in queryset:
+            student.is_approved = True
+            student.save()
+        self.message_user(request, "Selected students have been approved.")
+
+    approve_students.short_description = "Approve selected students"
+
+admin.site.register(CoreStudent, CoreStudentAdmin)
 

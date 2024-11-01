@@ -67,3 +67,25 @@
 <script src="{% static "assets/js/vendor-all.min.js" %}"></script>
 <script src="{% static "assets/js/plugins/bootstrap.min.js" %}"></script>
 <script src="{% static "assets/js/pcoded.min.js" %}"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Prepare to show messages
+		const messages = JSON.parse(document.getElementById('messages').textContent || '[]');
+		
+		if (messages.length > 0) {
+			// Show the messages in an alert or a modal
+			messages.forEach(msg => {
+				alert(msg); // Replace with a nicer modal if preferred
+			});
+		}
+	});
+</script>
+
+<!-- Hidden element to store messages for JavaScript to access -->
+<div id="messages" style="display: none;">
+	[
+		{% for message in messages %}
+			"{{ message|escapejs }}"{% if not forloop.last %}, {% endif %}
+		{% endfor %}
+	]
+</div>

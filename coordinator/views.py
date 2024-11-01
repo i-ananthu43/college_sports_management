@@ -254,14 +254,34 @@ def enter_score_view(request, match_id):
 
     return render(request, 'coordinator/enter_score.html', {'match': match})
 
-def select_winners(request, event_id):
-    event = get_object_or_404(SportEvent, id=event_id)
 
+@login_required
+def select_winners(request, event_id):
+    # Retrieve the CoordinatorAssignedEvent instance using event_id
+    assigned_event = get_object_or_404(CoordinatorAssignedEvent, id=event_id)
+
+    # Get the Coordinator instance for the logged-in user
+    try:
+        coordinator = request.user.coordinator
+    except Coordinator.DoesNotExist:
+        messages.error(request, "You do not have permission to select winners for this event.")
+        return redirect('manage_events')
+
+    # Check if the coordinator is assigned to the event
+    if assigned_event.coordinator != coordinator:
+        messages.error(request, "You do not have permission to select winners for this event.")
+        return redirect('manage_events')
+
+    # Access the associated sport_event from the assigned_event
+    event = assigned_event.sport_event
+
+    # Ensure the event type is "Athletics"
     if event.sport_type != "Athletics":
         messages.error(request, "This option is only available for athletics events.")
-        return redirect('some_view')  # Adjust redirection
+        return redirect('manage_events')  # Adjust redirection as needed
 
-    registered_students = EventRegistration.objects.filter(event=event)
+    # Fetch registered students related to the given event_id
+    registered_students = EventRegistration.objects.filter(event_id=event.id)
 
     if request.method == "POST":
         winner_id = request.POST.get("winner")
@@ -269,28 +289,22 @@ def select_winners(request, event_id):
         third_place_id = request.POST.get("third_place")
 
         if winner_id and runner_up_id and third_place_id:
-            # Create a Result record with the selected students and event title
+            # Create a Result record with selected students and event title
             Result.objects.create(
                 sport_event=event,
-                title=event.title,  # Using title from SportEvent
+                title=event.title,
                 first_prize_id=winner_id,
                 second_prize_id=runner_up_id,
                 third_prize_id=third_place_id,
                 date=event.date
             )
             messages.success(request, "Winners have been selected and saved successfully!")
-            return redirect('event_detail', event_id=event.id)  # Adjust redirection as needed
+            return redirect('event_detail', event_id=event.id)
         else:
             messages.error(request, "Please select all three placements.")
 
     return render(request, 'coordinator/select_winners.html', {
         'event': event,
-        'registered_students': registered_students
+        'registered_students': registered_students,
+        'event_id': assigned_event.sport_event.id  # Provide event_id for use in the template
     })
-
-
-
-
-
-
-

@@ -10,7 +10,8 @@ urlpatterns = [
     path('create-event/', views.create_event, name='create_event'),
     path('manage-users/', views.manage_users, name='manage_users'),
     path('test/', views.test_view, name='test_view'),
-   
+    path('approve_student/<int:student_id>/', views.approve_student, name='approve_student'),
+    path('reject_student/<int:student_id>/', views.reject_student, name='reject_student'),
    
     path('coordinators/', views.coordinators_list, name='coordinators_list'),
     path('coordinators/add/', views.add_coordinator, name='add_coordinator'),         # Add a new coordinator

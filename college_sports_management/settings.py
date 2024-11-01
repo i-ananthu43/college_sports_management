@@ -134,6 +134,11 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTHENTICATION_BACKENDS = (
+    'core.auth_backends.CustomUserBackend',  # Adjust this path as needed
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 def login_redirect(request):
     if request.user.is_superuser:
         return redirect('admin_dashboard')
