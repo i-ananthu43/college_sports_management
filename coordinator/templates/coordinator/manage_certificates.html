@@ -1,0 +1,59 @@
+
+<div class="container">
+    <h1>Manage Certificates</h1>
+
+    {% if event_certificates %}
+        {% for event, certificates in event_certificates.items %}
+            <h2>Event: {{ event.title }}</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Certificate Type</th>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for certificate in certificates %}
+                        <tr>
+                            <td>{{ certificate.student.student.full_name }}</td>
+                            <td>{{ certificate.certificate_type }}</td>
+                            <td>
+                                {% if certificate.file %}
+                                    <a href="{{ certificate.file.url }}" target="_blank">Download</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ certificate.status }}</td>
+                            <td>
+                                {% if certificate.status == 'pending' %}
+                                    <form action="{% url 'approve_certificate' certificate.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+                                    <form action="{% url 'reject_certificate' certificate.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No certificates found for this event.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        <p>No assigned events or certificates found.</p>
+    {% endif %}
+
+    <a href="{% url 'manage_events' %}" class="btn btn-primary">Back to Events</a>
+</div>

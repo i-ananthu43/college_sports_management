@@ -1,0 +1,20 @@
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Generate Certificates for {{ event.title }}</h2>
+    <p>Event Date: {{ event.date }}</p>
+    <p>Event Location: {{ event.location }}</p>
+    
+    <form method="post" action="{% url 'generate_certificates_view' event.id %}">
+        {% csrf_token %}
+        <div class="alert alert-info">
+            <strong>Note:</strong> This will generate winner and participation certificates for all approved participants.
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Certificates</button>
+    </form>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>

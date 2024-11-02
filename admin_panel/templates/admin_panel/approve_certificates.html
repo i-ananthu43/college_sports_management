@@ -1,0 +1,76 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+ <!-- [ Main Content ] start -->
+ <div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Students</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "admin_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">Student</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Pending Certificates for Approval</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <table class="table table-bordered table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Event Title</th>
+                    <th>Student</th>
+                    <th>Certificate Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cert in certificates %}
+                <tr>
+                    <td>{{ cert.event.title }}</td>
+                    <td>{{ cert.student.full_name }}</td>
+                    <td>{{ cert.certificate_type }}</td>
+                    <td>{{ cert.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No certificates pending approval.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if certificates %}
+            <button type="submit" class="btn btn-success">Approve All</button>
+        {% endif %}
+    </form>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+                </div> 
+            </div>
+        </div>
+        
+        <!-- Main Content Goes Here -->
+
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+{% endblock content %}

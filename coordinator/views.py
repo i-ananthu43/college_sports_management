@@ -2,6 +2,7 @@
 import logging
 import math
 import random
+from django.http import HttpResponse
 from django.shortcuts import redirect, render , get_object_or_404
 
 
@@ -10,9 +11,10 @@ from coordinator.forms import  SportEventForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from coordinator.models import House, MatchFixture, Result
+from coordinator.models import Certificate, House, MatchFixture, Result
+from coordinator.utils import generate_certificate
 from core.models import CoreStudent
-from student.models import Certificate, EventRegistration
+from student.models import EventRegistration
  # Ensure that the user is logged in
 
     
@@ -345,3 +347,80 @@ def view_assigned_event_results(request):
         'event_results': event_results,
     }
     return render(request, 'coordinator/view_assigned_event_results.html', context)
+
+def generate_certificates_view(request, event_id):
+    # Get the SportEvent instance using event_id
+    event = get_object_or_404(SportEvent, id=event_id)
+
+    # Track created certificates to avoid duplicates
+    created_certificates = set()
+
+    # Create a set of winners
+    winners = set()
+    for result in event.result_set.all():
+        winners.update([
+            result.first_prize,
+            result.second_prize,
+            result.third_prize,
+        ])
+
+    # Generate winner certificates
+    for student in winners:
+        if student:
+            # Ensure student is a valid CoreStudent instance
+            student_instance = CoreStudent.objects.filter(id=student.id).first() if isinstance(student, CoreStudent) else None
+            
+            if student_instance:
+                # Find EventRegistration for this student and event that is approved
+                registration = EventRegistration.objects.filter(event=event, student=student_instance, approved=True).first()
+                if registration:
+                    # Check if the certificate already exists to avoid duplicates
+                    cert_key = (event.id, registration.id, 'winner')
+                    if cert_key not in created_certificates:
+                        cert_file = generate_certificate(event, student_instance, 'winner')
+                        Certificate.objects.create(
+                            event=event,
+                            student=registration,
+                            certificate_type='winner',
+                            file=cert_file,
+                            status='pending'
+                        )
+                        created_certificates.add(cert_key)
+
+    # Generate participation certificates for all approved students who registered for the event
+    for registration in event.eventregistration_set.filter(approved=True):
+        # Ensure we're only generating a certificate for approved registrations
+        cert_key = (event.id, registration.id, 'participant')
+        if cert_key not in created_certificates:
+            cert_file = generate_certificate(event, registration.student, 'participant')
+            Certificate.objects.create(
+                event=event,
+                student=registration,
+                certificate_type='participant',
+                file=cert_file,
+                status='pending'
+            )
+            created_certificates.add(cert_key)
+
+    messages.success(request, "Certificates generated and sent for approval.")
+    return redirect('manage_events')
+
+def manage_certificates_view(request):
+    # Assuming you have a way to get the current coordinator
+    current_coordinator = request.user.coordinator  # or however you access the logged-in coordinator
+
+    # Get all events assigned to the current coordinator
+    assigned_events = CoordinatorAssignedEvent.objects.filter(coordinator=current_coordinator)
+
+    # Prepare a dictionary to store event and corresponding certificates
+    event_certificates = {}
+    
+    for assigned_event in assigned_events:
+        event = assigned_event.sport_event  # Access the SportEvent instance
+        # Get all certificates for this event
+        certificates = Certificate.objects.filter(event=event)
+        event_certificates[event] = certificates  # Store in dictionary
+
+    return render(request, 'coordinator/manage_certificates.html', {
+        'event_certificates': event_certificates,
+    })

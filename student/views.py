@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from admin_panel.models import SportEvent
 from django.contrib.auth.decorators import login_required
-from coordinator.models import Result
+from coordinator.models import Certificate, Result
 from core.models import CoreStudent
 from student.forms import EventRegistrationForm
 from student.models import EventRegistration
@@ -20,10 +20,6 @@ def dashboard(request):
         core_student = CoreStudent.objects.get(user=request.user)  # Assuming user is linked to CoreStudent
     return render(request, 'student/dashboard.html', {'core_student': core_student})
 
-
-def view_certificates(request):
-    # Logic for viewing a student's certificate
-    return render(request, 'student/view_certificates.html')
 
 def upcoming_events(request):
     events = SportEvent.objects.filter(date__gte=timezone.now()).order_by('date')
@@ -139,3 +135,7 @@ def view_results(request):
             })
 
     return render(request, 'student/view_results.html', {'results': results})
+
+def download_certificate_view(request):
+    student_certificates = Certificate.objects.filter(student=request.user, status='approved')
+    return render(request, 'student/download_certificate.html', {'certificates': student_certificates})

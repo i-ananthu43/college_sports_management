@@ -35,37 +35,44 @@
                     <p><strong>Location:</strong> {{ event.location }}</p>
 
 {% if registrations %}
-    <table class="table table-bordered">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Course</th>
+            <th>Branch</th>
+            <th>House</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for registration in registrations %}
             <tr>
-                <th>Student Name</th>
-                <th>Course</th>
-                <th>Branch</th>
-                <th>House</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <td>{{ registration.full_name }}</td>
+                <td>{{ registration.course }}</td>
+                <td>{{ registration.branch }}</td>
+                <td>{{ registration.house.name }}</td>
+                <td>{{ registration.approved|yesno:"Approved,Pending" }}</td>
+                <td>
+                    {% if not registration.approved %}
+                        <form method="POST" action="{% url 'approve_registration' registration.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </form>
+                    {% endif %}
+                    {% if registration.approved %}
+                        <form method="POST" action="{% url 'generate_certificates_view' event.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Generate Certificate</button>
+                        </form>
+                    {% endif %}
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% for registration in registrations %}
-                <tr>
-                    <td>{{ registration.full_name }}</td>
-                    <td>{{ registration.course }}</td>
-                    <td>{{ registration.branch }}</td>
-                    <td>{{ registration.house.name }}</td>
-                    <td>{{ registration.approved|yesno:"Approved,Pending" }}</td> <!-- Add an approved field -->
-                    <td>
-                        {% if not registration.approved %}
-                            <form method="POST" action="{% url 'approve_registration' registration.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success">Approve</button>
-                            </form>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% else %}
     <p>No registrations for this event.</p>
 {% endif %}

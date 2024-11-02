@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from admin_panel.models import Coordinator, SportEvent
 from core.models import CoreStudent
+from student.models import EventRegistration
 
 class EventReport(models.Model):
     event = models.ForeignKey(SportEvent, on_delete=models.CASCADE)
@@ -40,3 +41,12 @@ class Result(models.Model):
     second_prize = models.CharField(max_length=100)  # Use CharField for runner-up's name or ID
     third_prize = models.CharField(max_length=100)  # Use CharField for third place's name or ID
     date = models.DateField(auto_now_add=True)
+
+class Certificate(models.Model):
+    event = models.ForeignKey(SportEvent, on_delete=models.CASCADE)
+    student = models.ForeignKey(EventRegistration, on_delete=models.CASCADE)
+    certificate_type = models.CharField(max_length=20, choices=[('winner', 'Winner'), ('participant', 'Participant')])
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved')], default='pending')
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    issue_date = models.DateField(auto_now_add=True)
+    file = models.FileField(upload_to='certificates/', null=True, blank=True)

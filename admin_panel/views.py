@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from admin_panel.models import Coordinator, CoordinatorAssignedEvent, SportEvent
 from coordinator.forms import SportEventForm
+from coordinator.models import Certificate
 from core.models import CoreStudent
 from .forms import CoordinatorForm  # type: ignore # Import your form
 
@@ -257,3 +258,17 @@ def sport_event_delete(request, event_id):
         event.delete()
         return redirect('sport_events')  # Redirect to the list of events after deletion
     return render(request, 'admin_panel/sport_event_delete.html', {'event': event})
+
+def approve_certificates_view(request):
+    if request.method == "POST":
+        certificates = Certificate.objects.filter(status='pending')
+        for cert in certificates:
+            cert.status = 'approved'
+            cert.approved_by = request.user
+            # Add digital signature logic here if required
+            cert.save()
+        messages.success(request, "Certificates approved and signed.")
+        return redirect('admin_dashboard')
+    
+    pending_certificates = Certificate.objects.filter(status='pending')
+    return render(request, 'admin_panel/approve_certificates.html', {'certificates': pending_certificates})

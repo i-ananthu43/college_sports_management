@@ -25,4 +25,5 @@ urlpatterns = [
     path('sport_events/add/', views.sport_event_add, name='sport_event_add'),
     path('sport_events/edit/<int:event_id>/', views.sport_event_edit, name='sport_event_edit'),
     path('sport_events/delete/<int:event_id>/', views.sport_event_delete, name='sport_event_delete'),
+    path('approve_certificates/', views.approve_certificates_view, name='approve_certificates_view'),
 ]

@@ -3,13 +3,6 @@ from django.contrib.auth.models import User
 from admin_panel.models import SportEvent
 from core.models import CoreStudent
 
-class Certificate(models.Model):
-    student = models.ForeignKey(CoreStudent, on_delete=models.CASCADE)
-    event = models.ForeignKey(SportEvent, on_delete=models.CASCADE)
-    date_issued = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.student.full_name} - {self.event.title}'
 
 
 class ActivityPoint(models.Model):

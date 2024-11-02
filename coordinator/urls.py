@@ -1,6 +1,5 @@
 from django.urls import include, path
-from . import views
-
+from coordinator import views
 urlpatterns = [
     path('dashboard/', views.coordinator_dashboard, name='coordinator_dashboard'),
     path('dashboard/manage_events/', views.manage_events, name='manage_events'),
@@ -17,4 +16,6 @@ urlpatterns = [
     path('select_winners/<int:event_id>/', views.select_winners, name='select_winners'),
     
     path('coordinator/view-results/', views.view_assigned_event_results, name='view_assigned_event_results'),
+    path('generate_certificates/<int:event_id>/', views.generate_certificates_view, name='generate_certificates_view'),
+    path('manage_certificates/', views.manage_certificates_view, name='manage_certificates'),
 ]
