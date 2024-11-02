@@ -1,59 +1,83 @@
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Certificates</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'coordinator_dashboard' %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'manage_certificates' %}">Manage Certificates</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
 
-<div class="container">
-    <h1>Manage Certificates</h1>
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center mb-4">Assigned Events and Certificates</h2>
+                </div>
+                <div class="card-body">
+                    {% for event, certificates in event_certificates_list %}
+                        <h4>{{ event.title }}</h4>
+                        <p><strong>Date:</strong> {{ event.date|date:"F j, Y" }}</p>
+                        <p><strong>Location:</strong> {{ event.location }}</p>
 
-    {% if event_certificates %}
-        {% for event, certificates in event_certificates.items %}
-            <h2>Event: {{ event.title }}</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Student Name</th>
-                        <th>Certificate Type</th>
-                        <th>File</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for certificate in certificates %}
-                        <tr>
-                            <td>{{ certificate.student.student.full_name }}</td>
-                            <td>{{ certificate.certificate_type }}</td>
-                            <td>
-                                {% if certificate.file %}
-                                    <a href="{{ certificate.file.url }}" target="_blank">Download</a>
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td>
-                            <td>{{ certificate.status }}</td>
-                            <td>
-                                {% if certificate.status == 'pending' %}
-                                    <form action="{% url 'approve_certificate' certificate.id %}" method="post" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                    </form>
-                                    <form action="{% url 'reject_certificate' certificate.id %}" method="post" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                    </form>
-                                {% else %}
-                                    <span class="text-muted">N/A</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center">No certificates found for this event.</td>
-                        </tr>
+                        {% if certificates %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Certificate Type</th>
+                                        <th>Status</th>
+                                        <th>File</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cert in certificates %}
+                                        <tr>
+                                            <td>{{ cert.student.full_name }}</td>
+                                            <td>
+                                                {% if cert.certificate_type == 'winner' %}
+                                                    Winner: 
+                                                    {% if cert.prize_type == 'first prize' %}
+                                                        First Prize
+                                                    {% elif cert.prize_type == 'second prize' %}
+                                                        Second Prize
+                                                    {% elif cert.prize_type == 'third prize' %}
+                                                        Third Prize
+                                                    {% else %}
+                                                        Unknown Prize
+                                                    {% endif %}
+                                                {% else %}
+                                                    Participant
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ cert.status }}</td>
+                                            <td>
+                                                {% if cert.file %}
+                                                    <a href="{{ cert.file.url }}" target="_blank">View Certificate</a>
+                                                {% else %}
+                                                    No file available
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No certificates generated for this event.</p>
+                        {% endif %}
+                        <hr>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
-    {% else %}
-        <p>No assigned events or certificates found.</p>
-    {% endif %}
-
-    <a href="{% url 'manage_events' %}" class="btn btn-primary">Back to Events</a>
+                </div> 
+            </div> 
+        </div>
+    </div>
 </div>

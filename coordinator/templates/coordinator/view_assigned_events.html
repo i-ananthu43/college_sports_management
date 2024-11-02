@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block content %}
- <!-- [ Main Content ] start -->
- <div class="pcoded-main-container">
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
     <div class="pcoded-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
@@ -14,9 +14,9 @@
                             <h5 class="m-b-10">Manage Events</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
-                            <li class="breadcrumb-item"><a href="#!">assigned events</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'coordinator_dashboard' %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'manage_events' %}">Manage Events</a></li>
+                            <li class="breadcrumb-item"><a href="#!">Assigned Events</a></li>
                         </ul>
                     </div>
                 </div>
@@ -24,79 +24,78 @@
         </div>
         <!-- [ breadcrumb ] end -->
         <div class="col-sm-12">
-          <div class="card">
-              <div class="card-header text-center">
-                
-                <h2 class="text-center mb-4">Assigned Events and Registered Students</h2>
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2 class="text-center mb-4">Assigned Events and Registered Students</h2>
 
-                {% for event, registrations in events_with_students %}
-                    <h4>{{ event.title }}</h4>
-                    <p><strong>Date:</strong> {{ event.date|date:"F j, Y" }}</p>
-                    <p><strong>Location:</strong> {{ event.location }}</p>
+                    {% for event, registrations in events_with_students %}
+                        <h4>{{ event.title }}</h4>
+                        <p><strong>Date:</strong> {{ event.date|date:"F j, Y" }}</p>
+                        <p><strong>Location:</strong> {{ event.location }}</p>
 
-{% if registrations %}
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Student Name</th>
-            <th>Course</th>
-            <th>Branch</th>
-            <th>House</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for registration in registrations %}
-            <tr>
-                <td>{{ registration.full_name }}</td>
-                <td>{{ registration.course }}</td>
-                <td>{{ registration.branch }}</td>
-                <td>{{ registration.house.name }}</td>
-                <td>{{ registration.approved|yesno:"Approved,Pending" }}</td>
-                <td>
-                    {% if not registration.approved %}
-                        <form method="POST" action="{% url 'approve_registration' registration.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                    {% endif %}
-                    {% if registration.approved %}
-                        <form method="POST" action="{% url 'generate_certificates_view' event.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">Generate Certificate</button>
-                        </form>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                        {% if registrations|length > 0 %}
+                            
+                                        <form method="POST" action="{% url 'generate_certificates_view' event.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Generate Certificates for All Approved</button>
+                                        </form>
+                                    
+                                    {% endif %}
+                                    <br>
+                        {% if registrations %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Course</th>
+                                    <th>Branch</th>
+                                    <th>House</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for registration in registrations %}
+                                    <tr>
+                                        <td>{{ registration.full_name }}</td>
+                                        <td>{{ registration.course }}</td>
+                                        <td>{{ registration.branch }}</td>
+                                        <td>{{ registration.house.name }}</td>
+                                        <td>{{ registration.approved|yesno:"Approved,Pending" }}</td>
+                                        <td>
+                                            {% if not registration.approved %}
+                                                <form method="POST" action="{% url 'approve_registration' registration.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-success">Approve</button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
-{% else %}
-    <p>No registrations for this event.</p>
-{% endif %}
-<hr>
-{% endfor %}
-
-          </div> 
-      </div> 
-        <!-- Main Content Goes Here -->
-
+                        {% else %}
+                            <p>No registrations for this event.</p>
+                        {% endif %}
+                        <hr>
+                    {% endfor %}
+                </div> 
+            </div> 
+            <!-- Main Content Goes Here -->
+        </div>
     </div>
-</div>
-<!-- [ Main Content ] end -->
+    <!-- [ Main Content ] end -->
 
-<!-- Required JScript -->
-
-<script>
-    function confirmDelete(button) {
-        const confirmAction = confirm("Are you sure you want to delete this coordinator?");
-        if (confirmAction) {
-            // If the user confirms, submit the form
-            button.closest('form').submit();
+    <!-- Required JScript -->
+    <script>
+        function confirmDelete(button) {
+            const confirmAction = confirm("Are you sure you want to delete this coordinator?");
+            if (confirmAction) {
+                // If the user confirms, submit the form
+                button.closest('form').submit();
+            }
         }
-    }
     </script>
 {% endblock content %}
-   

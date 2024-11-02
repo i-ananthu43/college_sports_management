@@ -50,3 +50,14 @@ class Certificate(models.Model):
     approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     issue_date = models.DateField(auto_now_add=True)
     file = models.FileField(upload_to='certificates/', null=True, blank=True)
+
+class Achievement(models.Model):
+    student = models.ForeignKey(CoreStudent, related_name='achievements', on_delete=models.CASCADE)
+    achievement_type = models.CharField(max_length=100)  # Type of achievement (e.g., "Winner", "Participation")
+    description = models.TextField(blank=True, null=True)  # Description of the achievement
+    date_achieved = models.DateField()  # Date the achievement was attained
+    result = models.ForeignKey(Result, related_name='achievements', on_delete=models.CASCADE, null=True, blank=True)  # Link to Result table
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp for when the record was created
+
+    def __str__(self):
+        return f'{self.student.full_name} - {self.achievement_type} on {self.date_achieved}'

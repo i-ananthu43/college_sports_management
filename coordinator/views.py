@@ -11,7 +11,7 @@ from coordinator.forms import  SportEventForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from coordinator.models import Certificate, House, MatchFixture, Result
+from coordinator.models import Achievement, Certificate, House, MatchFixture, Result
 from coordinator.utils import generate_certificate
 from core.models import CoreStudent
 from student.models import EventRegistration
@@ -294,22 +294,50 @@ def select_winners(request, event_id):
         third_place_id = request.POST.get("third_place")
 
         if winner_id and runner_up_id and third_place_id:
+            # Retrieve CoreStudent instances using IDs
+            winner_student = get_object_or_404(CoreStudent, id=winner_id)
+            runner_up_student = get_object_or_404(CoreStudent, id=runner_up_id)
+            third_place_student = get_object_or_404(CoreStudent, id=third_place_id)
+
             if result:  # If results already exist, update them
-                result.first_prize = winner_id
-                result.second_prize = runner_up_id
-                result.third_prize = third_place_id
+                result.first_prize = str(winner_student.id)  # Store ID as string
+                result.second_prize = str(runner_up_student.id)  # Store ID as string
+                result.third_prize = str(third_place_student.id)  # Store ID as string
                 result.save()
                 messages.success(request, "Results have been updated successfully!")
             else:  # If results do not exist, create a new entry
-                Result.objects.create(
+                result = Result.objects.create(
                     sport_event=event,
                     title=event.title,
-                    first_prize=winner_id,
-                    second_prize=runner_up_id,
-                    third_prize=third_place_id,
+                    first_prize=str(winner_student.id),  # Store ID as string
+                    second_prize=str(runner_up_student.id),  # Store ID as string
+                    third_prize=str(third_place_student.id),  # Store ID as string
                     date=event.date
                 )
                 messages.success(request, "Winners have been selected and saved successfully!")
+
+            # Create achievements for winners
+            Achievement.objects.create(
+                student=winner_student,
+                achievement_type='Winner',
+                description='Won First Prize in {}'.format(event.title),
+                date_achieved=event.date,
+                result=result  # Link the achievement to the result
+            )
+            Achievement.objects.create(
+                student=runner_up_student,
+                achievement_type='Winner',
+                description='Won Second Prize in {}'.format(event.title),
+                date_achieved=event.date,
+                result=result  # Link the achievement to the result
+            )
+            Achievement.objects.create(
+                student=third_place_student,
+                achievement_type='Winner',
+                description='Won Third Prize in {}'.format(event.title),
+                date_achieved=event.date,
+                result=result  # Link the achievement to the result
+            )
 
             return redirect('view_assigned_event_results')
         else:
@@ -352,45 +380,52 @@ def generate_certificates_view(request, event_id):
     # Get the SportEvent instance using event_id
     event = get_object_or_404(SportEvent, id=event_id)
 
-    # Track created certificates to avoid duplicates
-    created_certificates = set()
+    # Track created certificates by storing (student_id, certificate_type) tuples
+    created_certificates = set(
+        Certificate.objects.filter(event=event).values_list('student__id', 'certificate_type')
+    )
 
-    # Create a set of winners
+    # Retrieve winners from the Result table
     winners = set()
     for result in event.result_set.all():
-        winners.update([
-            result.first_prize,
-            result.second_prize,
-            result.third_prize,
-        ])
+        for prize, prize_type in [
+            (result.first_prize, 'first prize'),
+            (result.second_prize, 'second prize'),
+            (result.third_prize, 'third prize')
+        ]:
+            # Check if the prize is an actual CoreStudent instance or a student ID
+            if isinstance(prize, CoreStudent):
+                winners.add((prize.id, prize_type))
+            else:
+                student = CoreStudent.objects.filter(id=prize).first() or CoreStudent.objects.filter(full_name=prize).first()
+                if student:
+                    winners.add((student.id, prize_type))
 
     # Generate winner certificates
-    for student in winners:
-        if student:
-            # Ensure student is a valid CoreStudent instance
-            student_instance = CoreStudent.objects.filter(id=student.id).first() if isinstance(student, CoreStudent) else None
-            
-            if student_instance:
-                # Find EventRegistration for this student and event that is approved
-                registration = EventRegistration.objects.filter(event=event, student=student_instance, approved=True).first()
-                if registration:
-                    # Check if the certificate already exists to avoid duplicates
-                    cert_key = (event.id, registration.id, 'winner')
-                    if cert_key not in created_certificates:
-                        cert_file = generate_certificate(event, student_instance, 'winner')
-                        Certificate.objects.create(
-                            event=event,
-                            student=registration,
-                            certificate_type='winner',
-                            file=cert_file,
-                            status='pending'
-                        )
-                        created_certificates.add(cert_key)
+    for student_id, prize_type in winners:
+        student = CoreStudent.objects.filter(id=student_id).first()
+        registration = EventRegistration.objects.filter(event=event, student=student, approved=True).first()
 
-    # Generate participation certificates for all approved students who registered for the event
+        if registration:
+            cert_key = (student.id, prize_type)
+            if cert_key not in created_certificates:
+                cert_file = generate_certificate(event, student, prize_type)
+                Certificate.objects.create(
+                    event=event,
+                    student=registration,
+                    certificate_type=prize_type,  # Store the actual prize type
+                    file=cert_file,
+                    status='pending'
+                )
+                created_certificates.add(cert_key)
+
+    # Generate participant certificates for all approved students who registered for the event
     for registration in event.eventregistration_set.filter(approved=True):
-        # Ensure we're only generating a certificate for approved registrations
-        cert_key = (event.id, registration.id, 'participant')
+        # Skip if the student is a winner
+        if any(registration.student.id == winner_id for winner_id, _ in winners):
+            continue
+        
+        cert_key = (registration.student.id, 'participant')
         if cert_key not in created_certificates:
             cert_file = generate_certificate(event, registration.student, 'participant')
             Certificate.objects.create(
@@ -403,7 +438,8 @@ def generate_certificates_view(request, event_id):
             created_certificates.add(cert_key)
 
     messages.success(request, "Certificates generated and sent for approval.")
-    return redirect('manage_events')
+    return redirect('view_assigned_events')
+
 
 def manage_certificates_view(request):
     # Assuming you have a way to get the current coordinator
@@ -412,15 +448,15 @@ def manage_certificates_view(request):
     # Get all events assigned to the current coordinator
     assigned_events = CoordinatorAssignedEvent.objects.filter(coordinator=current_coordinator)
 
-    # Prepare a dictionary to store event and corresponding certificates
-    event_certificates = {}
+    # Prepare a list to store event and corresponding certificates
+    event_certificates_list = []
     
     for assigned_event in assigned_events:
         event = assigned_event.sport_event  # Access the SportEvent instance
         # Get all certificates for this event
         certificates = Certificate.objects.filter(event=event)
-        event_certificates[event] = certificates  # Store in dictionary
+        event_certificates_list.append((event, certificates))  # Append tuple of (event, certificates)
 
     return render(request, 'coordinator/manage_certificates.html', {
-        'event_certificates': event_certificates,
+        'event_certificates_list': event_certificates_list,
     })
