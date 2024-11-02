@@ -18,8 +18,11 @@ from django.contrib import admin
 from django.shortcuts import render
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
 
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+from college_sports_management import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,3 +52,7 @@ def admin_dashboard(request):
 def coordinator_dashboard(request):
     # Coordinator-specific logic
     return render(request, 'coordinator/dashboard.html')
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -136,6 +136,27 @@ def view_results(request):
 
     return render(request, 'student/view_results.html', {'results': results})
 
-def download_certificate_view(request):
-    student_certificates = Certificate.objects.filter(student=request.user, status='approved')
-    return render(request, 'student/download_certificate.html', {'certificates': student_certificates})
+@login_required  # Ensure that the user is logged in
+def view_certificates(request):
+    try:
+        # Retrieve the CoreStudent instance related to the logged-in user
+        student = CoreStudent.objects.get(user=request.user)
+
+        # Query for Event Registrations related to the student
+        registrations = EventRegistration.objects.filter(student=student)
+
+        # Query for certificates related to those registrations that are approved
+        certificates = Certificate.objects.filter(
+            student__in=registrations,  # Filter by EventRegistration instances related to the student
+            status='approved'  # Only include approved certificates
+        )
+
+        # Render the template with the certificates context
+        return render(request, 'student/view_certificates.html', {'certificates': certificates})
+
+    except CoreStudent.DoesNotExist:
+        # Handle the case where the student profile does not exist
+        return render(request, 'student/view_certificates.html', {
+            'certificates': [],
+            'error': "Student profile not found."
+        })

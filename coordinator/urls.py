@@ -1,5 +1,7 @@
+
 from django.urls import include, path
 from coordinator import views
+
 urlpatterns = [
     path('dashboard/', views.coordinator_dashboard, name='coordinator_dashboard'),
     path('dashboard/manage_events/', views.manage_events, name='manage_events'),

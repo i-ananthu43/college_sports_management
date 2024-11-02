@@ -1,0 +1,70 @@
+<!-- student/view_certificates.html -->
+{% extends "student/base.html" %}
+{% load static %}
+{% block content %} <!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "student_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">registered events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                  
+                    
+{% if certificates %}
+<h2>Your Certificates</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Event Title</th>
+            <th>Certificate Type</th>
+            <th>Download</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for certificate in certificates %}
+            <tr>
+                <td>{{ certificate.event.title }}</td>
+                <td>{{ certificate.certificate_type }}</td>
+                <td>
+                    <a href="{{ certificate.file.url }}" download>Download</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No approved certificates found.</p>
+{% endif %}
+
+
+
+        <!-- Main Content Goes Here -->
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+{% endblock content %}
+   
+
+
+
+
+
+
+
+

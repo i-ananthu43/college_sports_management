@@ -1,3 +1,8 @@
+{% extends "coordinator/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
 <div class="pcoded-main-container">
     <div class="pcoded-content">
         <!-- [ breadcrumb ] start -->
@@ -6,22 +11,22 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Manage Certificates</h5>
+                            <h5 class="m-b-10">Manage Events</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'coordinator_dashboard' %}"><i class="feather icon-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'manage_certificates' %}">Manage Certificates</a></li>
+                            <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
+                            
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
         <!-- [ breadcrumb ] end -->
-
         <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center mb-4">Assigned Events and Certificates</h2>
+          <div class="card">
+              <div class="card-header">
+                <h2 class="text-center mb-4">Assigned Events and Certificates</h2>
                 </div>
                 <div class="card-body">
                     {% for event, certificates in event_certificates_list %}
@@ -44,17 +49,12 @@
                                         <tr>
                                             <td>{{ cert.student.full_name }}</td>
                                             <td>
-                                                {% if cert.certificate_type == 'winner' %}
-                                                    Winner: 
-                                                    {% if cert.prize_type == 'first prize' %}
-                                                        First Prize
-                                                    {% elif cert.prize_type == 'second prize' %}
-                                                        Second Prize
-                                                    {% elif cert.prize_type == 'third prize' %}
-                                                        Third Prize
-                                                    {% else %}
-                                                        Unknown Prize
-                                                    {% endif %}
+                                                {% if cert.certificate_type == 'first prize' %}
+                                                    First Prize
+                                                {% elif cert.certificate_type == 'second prize' %}
+                                                    Second Prize
+                                                {% elif cert.certificate_type == 'third prize' %}
+                                                    Third Prize
                                                 {% else %}
                                                     Participant
                                                 {% endif %}
@@ -76,8 +76,25 @@
                         {% endif %}
                         <hr>
                     {% endfor %}
-                </div> 
-            </div> 
-        </div>
+          </div> 
+      </div> 
+        <!-- Main Content Goes Here -->
+
     </div>
 </div>
+<!-- [ Main Content ] end -->
+<script>
+    function confirmDelete(button) {
+        const confirmAction = confirm("Are you sure you want to delete this coordinator?");
+        if (confirmAction) {
+            // If the user confirms, submit the form
+            button.closest('form').submit();
+        }
+    }
+    </script>
+
+    <script src="{% static "https://code.jquery.com/jquery-3.5.1.min.js" %} "></script>
+    <script src="{% static " https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" %} "></script>
+{% endblock content %}
+
+    
