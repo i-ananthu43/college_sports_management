@@ -153,3 +153,4 @@ def login_redirect(request):
     else:
         return redirect('student_dashboard')
     
+LOGOUT_REDIRECT_URL = '/'

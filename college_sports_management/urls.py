@@ -32,7 +32,8 @@ urlpatterns = [
     path('student/', include('student.urls')),
     path('coordinator/', include('coordinator.urls')),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', auth_views.LogoutView.as_view(), name='home'),
+
 ]
 
 def admin_required(user):

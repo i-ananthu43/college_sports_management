@@ -20,4 +20,5 @@ urlpatterns = [
     path('coordinator/view-results/', views.view_assigned_event_results, name='view_assigned_event_results'),
     path('generate_certificates/<int:event_id>/', views.generate_certificates_view, name='generate_certificates_view'),
     path('manage_certificates/', views.manage_certificates_view, name='manage_certificates'),
+    path('event/<int:event_id>/report/', views.generate_event_report, name='generate_event_report'),
 ]

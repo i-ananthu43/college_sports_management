@@ -1,0 +1,65 @@
+{% extends "student/base.html" %}
+{% load static %}
+{% block content %} <!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "student_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">registered events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="container mt-4">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Your Achievements</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if achievements %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Achievement Type</th>
+                                        <th>Description</th>
+                                        <th>Date Achieved</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for achievement in achievements %}
+                                        <tr>
+                                            <td>{{ achievement.achievement_type }}</td>
+                                            <td>{{ achievement.description }}</td>
+                                            <td>{{ achievement.date_achieved|date:"Y-m-d" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                No achievements available.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Goes Here -->
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+{% endblock content %}
+   
+

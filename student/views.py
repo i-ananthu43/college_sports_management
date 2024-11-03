@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from admin_panel.models import SportEvent
 from django.contrib.auth.decorators import login_required
-from coordinator.models import Certificate, Result
+from coordinator.models import Achievement, Certificate, Result
 from core.models import CoreStudent
 from student.forms import EventRegistrationForm
 from student.models import EventRegistration
@@ -119,22 +119,27 @@ def view_results(request):
     # Get the current logged-in student
     student = get_object_or_404(CoreStudent, user=request.user)
 
-    # Get all event registrations for this student
-    registered_events = EventRegistration.objects.filter(student=student)
+    # Fetch all results for the events the student is registered in
+    results = Result.objects.filter(
+        sport_event__eventregistration__student=student
+    ).distinct()
 
-    # Initialize a list to hold the results
-    results = []
+    # For each result, fetch the CoreStudent objects for the prize fields
+    results_with_students = []
+    for result in results:
+        first_prize_student = CoreStudent.objects.filter(id=result.first_prize).first()
+        second_prize_student = CoreStudent.objects.filter(id=result.second_prize).first()
+        third_prize_student = CoreStudent.objects.filter(id=result.third_prize).first()
 
-    # Loop through each registered event and fetch its result
-    for registration in registered_events:
-        result = Result.objects.filter(sport_event=registration.event).first()
-        if result:
-            results.append({
-                'event': registration.event,
-                'result': result
-            })
+        results_with_students.append({
+            'sport_event': result.sport_event,
+            'first_prize': first_prize_student,
+            'second_prize': second_prize_student,
+            'third_prize': third_prize_student
+        })
 
-    return render(request, 'student/view_results.html', {'results': results})
+    return render(request, 'student/view_results.html', {'results': results_with_students})
+
 
 @login_required  # Ensure that the user is logged in
 def view_certificates(request):
@@ -160,3 +165,14 @@ def view_certificates(request):
             'certificates': [],
             'error': "Student profile not found."
         })
+    
+@login_required
+def view_achievements(request):
+    # Get the current logged-in student
+    student = get_object_or_404(CoreStudent, user=request.user)
+
+    # Fetch all achievements for this student
+    achievements = Achievement.objects.filter(student=student)
+
+    # Render the achievements in the template
+    return render(request, 'student/view_achievements.html', {'achievements': achievements})

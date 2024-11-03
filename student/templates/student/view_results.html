@@ -39,27 +39,27 @@
         </tr>
     </thead>
     <tbody>
-        {% for entry in results %}
+        {% for result in results %}
         <tr>
-            <td>{{ entry.event.title }}</td>
-            <td>{{ entry.result.date }}</td>
+            <td>{{ result.sport_event.title }}</td>
+            <td>{{ result.sport_event.date }}</td>
             <td>
-                {% if entry.result.first_prize %}
-                    {{ entry.result.first_prize.full_name }} ({{ entry.result.first_prize.house.name }})
+                {% if result.first_prize %}
+                    {{ result.first_prize.full_name }} ({{ result.first_prize.house.name }})
                 {% else %}
                     Not Assigned
                 {% endif %}
             </td>
             <td>
-                {% if entry.result.second_prize %}
-                    {{ entry.result.second_prize.full_name }} ({{ entry.result.second_prize.house.name }})
+                {% if result.second_prize %}
+                    {{ result.second_prize.full_name }} ({{ result.second_prize.house.name }})
                 {% else %}
                     Not Assigned
                 {% endif %}
             </td>
             <td>
-                {% if entry.result.third_prize %}
-                    {{ entry.result.third_prize.full_name }} ({{ entry.result.third_prize.house.name }})
+                {% if result.third_prize %}
+                    {{ result.third_prize.full_name }} ({{ result.third_prize.house.name }})
                 {% else %}
                     Not Assigned
                 {% endif %}

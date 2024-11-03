@@ -8,4 +8,5 @@ urlpatterns = [
     path('student/view_registered_events/', views.view_registered_events, name='view_registered_events'),
     path('student/results/', views.view_results, name='view_results'),
     path('certificates/', views.view_certificates, name='view_certificates'),
+    path('achievements/', views.view_achievements, name='view_achievements'),  # URL for viewing achievements
 ]

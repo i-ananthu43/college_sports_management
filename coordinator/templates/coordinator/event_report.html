@@ -1,0 +1,87 @@
+<!-- templates/coordinator/event_report.html -->
+
+<h2>Event Report for {{ report.event.title }}</h2>
+<p><strong>Date:</strong> {{ report.event.date }}</p>
+<p><strong>Location:</strong> {{ report.event.location }}</p>
+
+<h3>Awards and Results</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>First Prize</th>
+            <th>Second Prize</th>
+            <th>Third Prize</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for result in report.results %}
+            <tr>
+                <td>{{ result.title }}</td>
+                <td>{{ result.first_prize }}</td>
+                <td>{{ result.second_prize }}</td>
+                <td>{{ result.third_prize }}</td>
+                <td>{{ result.date }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No results available for this event.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Certificates Issued</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Certificate Type</th>
+            <th>Status</th>
+            <th>Issued By</th>
+            <th>Issue Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for certificate in report.certificates %}
+            <tr>
+                <td>{{ certificate.student.full_name }}</td>
+                <td>{{ certificate.certificate_type }}</td>
+                <td>{{ certificate.status }}</td>
+                <td>{{ certificate.approved_by.username if certificate.approved_by else "N/A" }}</td>
+                <td>{{ certificate.issue_date }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No certificates issued for this event.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Achievements</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Achievement Type</th>
+            <th>Description</th>
+            <th>Date Achieved</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for achievement in report.achievements %}
+            <tr>
+                <td>{{ achievement.student.full_name }}</td>
+                <td>{{ achievement.achievement_type }}</td>
+                <td>{{ achievement.description }}</td>
+                <td>{{ achievement.date_achieved }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No achievements recorded for this event.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

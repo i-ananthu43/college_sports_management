@@ -460,3 +460,29 @@ def manage_certificates_view(request):
     return render(request, 'coordinator/manage_certificates.html', {
         'event_certificates_list': event_certificates_list,
     })
+
+
+@login_required
+def generate_event_report(request, event_id):
+    # Get the event
+    event = get_object_or_404(SportEvent, id=event_id)
+
+    # Get results for the event
+    results = Result.objects.filter(sport_event=event)
+
+    # Get certificates for the event
+    certificates = Certificate.objects.filter(event=event)
+
+    # Get achievements for the participants of the event
+    student_ids = EventRegistration.objects.filter(event=event).values_list('student', flat=True)
+    achievements = Achievement.objects.filter(student__in=student_ids)
+
+    # Prepare report data
+    report_data = {
+        'event': event,
+        'results': results,
+        'certificates': certificates,
+        'achievements': achievements,
+    }
+
+    return render(request, 'coordinator/event_report.html', {'report': report_data})
