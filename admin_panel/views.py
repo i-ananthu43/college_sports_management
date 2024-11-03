@@ -20,14 +20,46 @@ from .forms import CoordinatorForm  # type: ignore # Import your form
 
 def admin_dashboard(request):
     return render(request, 'admin_panel/dashboard.html')
-    
 
-def create_event(request):
-    # Logic for creating an event goes here
-    return render(request, 'admin_panel/create_event.html')
+def dashboard_view(request):
+    total_registered_users = CoreStudent.objects.count()  # Count total registered users
+    total_open_users = CoreStudent.objects.filter(is_approved=True).count()  # Count approved users
+    total_inactive_users = CoreStudent.objects.filter(is_approved=False).count()  # Count not approved users
+
+    total_coordinators = Coordinator.objects.count()  # Count total coordinators
+    total_active_coordinators = Coordinator.objects.filter(user__is_active=True).count()  # Count active coordinators based on User's is_active
+    total_inactive_coordinators = Coordinator.objects.filter(user__is_active=False).count()  # Count inactive coordinators based on User's is_active
+    total_events = SportEvent.objects.count()
+    total_certificates_approved = Certificate.objects.filter(is_approved=True).count()
+
+    context = {
+        'total_registered_users': total_registered_users,
+        'total_open_users': total_open_users,
+        'total_inactive_users': total_inactive_users,
+        'total_coordinators': total_coordinators,
+        'total_active_coordinators': total_active_coordinators,
+        'total_inactive_coordinators': total_inactive_coordinators,
+        'total_events': total_events, 
+        'total_certificates_approved': total_certificates_approved,
+
+    }
+
+    return render(request, 'admin_panel/dashboard.html', context)
+
+def event_list_view(request):
+    events = SportEvent.objects.all()  # Adjust filtering as needed
+    return render(request, 'admin_panel/dashboard.html', {'events': events})
+
 def manage_users(request):
     # Logic for managing users goes here
     return render(request,'admin_panel/manage_users.html')
+
+
+def approve_student(request, student_id):
+    student = get_object_or_404(CoreStudent, id=student_id)
+    student.is_approved = True  # Assuming an `is_approved` field for approval status
+    student.save()
+    return redirect('student_list')
 
 @login_required
 def approve_student(request, student_id):

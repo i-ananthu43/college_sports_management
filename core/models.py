@@ -14,6 +14,9 @@ class CoreStudent(models.Model):
     year_of_study = models.IntegerField()
     house = models.ForeignKey('coordinator.House', on_delete=models.SET_NULL, null=True, blank=True)
     is_approved = models.BooleanField(default=False)  # New field for approval status
+    is_active = models.BooleanField(default=True)  # New field for active status
+    
+
 
     def __str__(self):
         return self.full_name

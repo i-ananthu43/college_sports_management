@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from coordinator.models import Achievement, Certificate, House, MatchFixture, Result
-from coordinator.utils import generate_certificate
+from coordinator.utils import generate_certificate, generate_report
 from core.models import CoreStudent
 from student.models import EventRegistration
  # Ensure that the user is logged in
@@ -34,6 +34,42 @@ def coordinator_dashboard(request):
     else:
         messages.error(request, 'Coordinator profile not found.')  # Notify if coordinator profile does not exist
         return redirect('login')  # Redirect to login if not authenticated or coordinator not found
+
+def dashboard_view(request):
+    # Assuming the user is a coordinator and has access only to their assigned events
+    coordinator = request.user.coordinator  # Adjust as necessary
+    total_assigned_events = CoordinatorAssignedEvent.objects.filter(coordinator=coordinator).count()
+    total_registered_students = CoreStudent.objects.count()
+    total_active_students = CoreStudent.objects.filter(is_active=True).count()
+    total_inactive_students = CoreStudent.objects.filter(is_active=False).count()
+    total_generated_certificates = Certificate.objects.count()
+    user = request.user
+    assigned_events = SportEvent.objects.filter(coordinator__user=user)
+    
+    context = {
+        'total_registered_students': total_registered_students,
+        'total_active_students': total_active_students,
+        'total_inactive_students': total_inactive_students,
+        'total_assigned_events': total_assigned_events,
+        'total_generated_certificates': total_generated_certificates,
+        'assigned_events': assigned_events,
+        # other context data...
+    }
+    
+    return render(request, 'coordinator/dashboard.html', context)
+
+
+@login_required
+def event_registered_students_view(request):
+    # Assuming the user is a coordinator and filtering registrations accordingly
+    event_registrations = EventRegistration.objects.select_related('student', 'event').all()  # Adjust as necessary
+
+    context = {
+        'event_registrations': event_registrations,
+        # Add any other context variables as needed
+    }
+    
+    return render(request, 'coordinator/dashboard.html', context)
 
 
 def manage_events(request):
@@ -486,3 +522,27 @@ def generate_event_report(request, event_id):
     }
 
     return render(request, 'coordinator/event_report.html', {'report': report_data})
+
+
+def generate_report_view(request, event_id):
+    event = get_object_or_404(SportEvent, id=event_id)
+
+    # Generate the report PDF
+    pdf = generate_event_report(event)
+
+    # Create the response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="report_{event.title}.pdf"'
+    return response
+
+def report_view(request, event_id):
+    # Correctly retrieve the SportEvent instance
+    event = get_object_or_404(SportEvent, id=event_id)
+
+    # Generate the report PDF
+    pdf = generate_report(event)
+
+    # Create the response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="report_{event.title}.pdf"'
+    return response

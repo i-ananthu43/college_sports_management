@@ -21,7 +21,232 @@
             </div>
         </div>
         <!-- [ breadcrumb ] end -->
+        <div class="row">
+            <div class="col-lg-7 col-md-12">
+                <!-- support-section start -->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card support-bar overflow-hidden">
+                            <div class="card-body pb-0">
+                                <h2 class="m-0">{{ total_registered_users }}</h2>  <!-- Display total registered users -->
+                                <span class="text-c-blue">Registered Users</span>
+                                <p class="mb-3 mt-3">Total number of users registered in the system.</p>
+                            </div>
+                            <div id="support-chart"></div>  <!-- You may want to update or remove this chart if it's not relevant -->
+                            <div class="card-footer bg-primary text-white">
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">{{ total_open_users }}</h4>  <!-- Display active users count -->
+                                        <span>Active Users</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">{{ total_inactive_users }}</h4>  <!-- Display inactive users count -->
+                                        <span>Inactive Users</span>
+                                    </div>
+                                    <!-- Removed verified users section -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card support-bar overflow-hidden">
+                            <div class="card-body pb-0">
+                                <h2 class="m-0">{{ total_coordinators }}</h2> <!-- Display total number of coordinators -->
+                                <span class="text-c-green">Coordinators</span>
+                                <p class="mb-3 mt-3">Total number of coordinators in the system.</p>
+                            </div>
+                            <div id="coordinator-chart1"></div> <!-- Optional chart element; update ID if needed -->
+                            <div class="card-footer bg-success text-white">
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">{{ total_active_coordinators }}</h4> <!-- Display active coordinators count -->
+                                        <span>Active</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">{{ total_inactive_coordinators }}</h4> <!-- Display inactive coordinators count -->
+                                        <span>Inactive</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- support-section end -->
+            </div>
+            <div class="col-lg-5 col-md-12">
+                <!-- page statustic card start -->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h4 class="text-c-yellow">{{ total_events }}</h4> <!-- Display total number of events -->
+                                        <h6 class="text-muted m-b-0">Total Events</h6> <!-- Update label to "Total Events" -->
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <i class="feather icon-bar-chart-2 f-28"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-c-yellow">
+                                <div class="row align-items-center">
+                                    <div class="col-9">
+                                        <p class="text-white m-b-0">Event Stats</p> <!-- Update as desired -->
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <i class="feather icon-trending-up text-white f-16"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h4 class="text-c-red">{{ total_certificates_approved }}</h4> <!-- Display total approved certificates -->
+                                        <h6 class="text-muted m-b-0">Approved Certificates</h6> <!-- Update label to "Approved Certificates" -->
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <i class="feather icon-calendar f-28"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-c-red">
+                                <div class="row align-items-center">
+                                    <div class="col-9">
+                                        <p class="text-white m-b-0">Certificate Stats</p> <!-- Update as desired -->
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <i class="feather icon-trending-down text-white f-16"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+            
+                </div>
+                <!-- page statustic card end -->
+            </div>
 
+            <div class="col-xl-6 col-md-12">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h5>Events</h5>
+                        <div class="card-header-right">
+                            <div class="btn-group card-option">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="feather icon-more-horizontal"></i>
+                                </button>
+                                <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                    <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                    <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                    <li class="dropdown-item reload-card"><a href="#!"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                    <li class="dropdown-item close-card"><a href="#!"><i class="feather icon-trash"></i> remove</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Event Title</th>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Sport Type</th>
+                                        <th class="text-right">Coordinator</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-inline-block align-middle">
+                                                <div class="d-inline-block">
+                                                    <h6>{{ event.title }}</h6>
+                                                    <p class="text-muted m-b-0">{{ event.description|truncatewords:10 }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ event.date|date:"M, d" }}</td>
+                                        <td>{{ event.location }}</td>
+                                        <td><label class="badge badge-light-primary">{{ event.sport_type }}</label></td>
+                                        <td class="text-right">{{ event.coordinator.full_name }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No events found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+                <div class="card latest-update-card">
+                    <div class="card-header">
+                        <h5>New Registered Students</h5>
+                        <div class="card-header-right">
+                            <div class="btn-group card-option">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="feather icon-more-horizontal"></i>
+                                </button>
+                                <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                    <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                    <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                    <li class="dropdown-item reload-card"><a href="#!"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                    <li class="dropdown-item close-card"><a href="#!"><i class="feather icon-trash"></i> remove</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="latest-update-box">
+                            {% for student in new_students %}
+                            <div class="row p-b-30">
+                                <div class="col-auto text-right update-meta">
+                                    <p class="text-muted m-b-0 d-inline-flex">New Student</p>
+                                    <i class="feather icon-user bg-primary update-icon"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6>{{ student.full_name }}</h6>
+                                    </a>
+                                    <p class="text-muted m-b-0">{{ student.course }} - {{ student.branch }}</p>
+                                    <form method="post" action="{% url 'approve_student' student.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm mt-2">Approve</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="row p-b-30">
+                                <div class="col text-center">
+                                    <p class="text-muted">No new registered students</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'student_list' %}" class="b-b-primary text-primary">View all Students</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
         <!-- Main Content Goes Here -->
     </div>
 </div>

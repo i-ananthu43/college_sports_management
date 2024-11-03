@@ -4,10 +4,12 @@ from django.core.files.storage import FileSystemStorage
 from college_sports_management import settings
 import io
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A5
+from reportlab.lib.pagesizes import A5, letter
 from reportlab.lib import colors
 from django.core.files.base import ContentFile
 from django.conf import settings
+
+from coordinator.models import Achievement, Certificate
 
 def generate_certificate(event, student, certificate_type):
     buffer = io.BytesIO()
@@ -78,3 +80,40 @@ def save_certificate(file_name, content):
     fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'certificates'))
     filename = fs.save(file_name, content)  # Ensure content is a File-like object
     return filename
+
+
+def generate_report(event):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    # Title
+    p.setFont("Helvetica-Bold", 24)
+    p.drawString(100, 750, "Event Report")
+
+    # Event details
+    p.setFont("Helvetica", 16)
+    p.drawString(100, 700, f"Event Title: {event.title}")
+    p.drawString(100, 680, f"Date: {event.date}")
+    p.drawString(100, 660, f"Location: {event.location}")
+
+    # Achievements
+    achievements = Achievement.objects.filter(result__sport_event=event)
+    p.drawString(100, 620, "Achievements:")
+    y_position = 600
+    for achievement in achievements:
+        p.drawString(120, y_position, f"{achievement.student.full_name} - {achievement.achievement_type} on {achievement.date_achieved}")
+        y_position -= 20
+
+    # Certificates
+    certificates = Certificate.objects.filter(event=event)
+    p.drawString(100, y_position, "Certificates:")
+    y_position -= 20
+    for cert in certificates:
+        p.drawString(120, y_position, f"{cert.student.full_name} - {cert.certificate_type} (Status: {cert.status})")
+        y_position -= 20
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return buffer.getvalue()

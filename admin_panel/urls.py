@@ -7,7 +7,6 @@ from . import views
 urlpatterns = [
     path('',include('core.urls')),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('create-event/', views.create_event, name='create_event'),
     path('manage-users/', views.manage_users, name='manage_users'),
     path('test/', views.test_view, name='test_view'),
     path('approve_student/<int:student_id>/', views.approve_student, name='approve_student'),
@@ -26,4 +25,5 @@ urlpatterns = [
     path('sport_events/edit/<int:event_id>/', views.sport_event_edit, name='sport_event_edit'),
     path('sport_events/delete/<int:event_id>/', views.sport_event_delete, name='sport_event_delete'),
     path('approve_certificates/', views.approve_certificates_view, name='approve_certificates_view'),
+    path('approve-student/<int:student_id>/', views.approve_student, name='approve_student'),
 ]

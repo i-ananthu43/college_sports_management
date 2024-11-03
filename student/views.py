@@ -176,3 +176,15 @@ def view_achievements(request):
 
     # Render the achievements in the template
     return render(request, 'student/view_achievements.html', {'achievements': achievements})
+
+def achievements_view(request):
+    # Fetch all achievements from the database
+    student = get_object_or_404(CoreStudent, user=request.user)
+    achievements = Achievement.objects.filter(student=student)
+    # Prepare context for the template
+    context = {
+        'achievements': achievements,
+    }
+
+    # Render the template with the context
+    return render(request, 'student/dashboard.html', context)

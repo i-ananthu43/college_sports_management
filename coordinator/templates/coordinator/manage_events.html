@@ -30,43 +30,44 @@
 
                     
                         {% if events %}
-                            <table class="table">
-                                <thead>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Event Title</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>  <!-- Added Actions header -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in events %}
                                     <tr>
-                                        <th>Event Title</th>
-                                        <th>Location</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Description</th>
-                                        <th>Actions</th>  <!-- Added Actions header -->
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for event in events %}
-                                        <tr>
-                                            <td>{{ event.sport_event.title }}</td>  <!-- Accessing the title from the related SportEvent -->
-                                            <td><i class="fa fa-map-marker"></i> {{ event.sport_event.location }}</td>  <!-- Accessing the location -->
-                                            <td>{{ event.sport_event.date }}</td>  <!-- Accessing the date -->
-                                            <td>{{ event.sport_event.time }}</td>  <!-- Accessing the time -->
-                                            <td>{{ event.sport_event.description }}</td>  <!-- Accessing the description -->
-                                            <td>
-                                                <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>  <!-- Link to edit the event -->
-                                            </td>
-                                            <td>
-                                                {% if event.sport_type == "Sports" %}
-                                                   
+                                        <td>{{ event.sport_event.title }}</td>  <!-- Accessing the title from the related SportEvent -->
+                                        <td><i class="fa fa-map-marker"></i> {{ event.sport_event.location }}</td>  <!-- Accessing the location -->
+                                        <td>{{ event.sport_event.date }}</td>  <!-- Accessing the date -->
+                                        <td>{{ event.sport_event.time }}</td>  <!-- Accessing the time -->
+                                        <td>{{ event.sport_event.description }}</td>  <!-- Accessing the description -->
+                                        <td>
+                                            <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>  <!-- Link to edit the event -->
+                                        </td>
+                                        <td>
+                                            {% if event.result_set.exists %}  <!-- Check if winners have been selected -->
+                                                <a href="{% url 'generate_report' event.id %}" class="btn btn-primary">Generate Report</a>
+                                            {% elif event.sport_type == "Sports" %}
                                                 <a href="{% url 'match_fixture' event.id %}" class="btn btn-primary">Generate Fixture</a>
-
-                                                {% else %}
+                                            {% else %}
                                                 <a href="{% url 'select_winners' event.id %}" class="btn btn-primary">Select Winners</a>
-                                                
-                                                {% endif %}
-                                            </td>
-                                            
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'generate_report' event.id %}" class="btn btn-success">Generate Report</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                         {% else %}
                             <p>No assigned events available.</p>
                         {% endif %}
