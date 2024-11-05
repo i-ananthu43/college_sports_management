@@ -1,87 +1,121 @@
-<!-- templates/coordinator/event_report.html -->
+<!DOCTYPE html>
+{% extends "coordinator/base.html" %}
+{% load static %}
 
-<h2>Event Report for {{ report.event.title }}</h2>
-<p><strong>Date:</strong> {{ report.event.date }}</p>
-<p><strong>Location:</strong> {{ report.event.location }}</p>
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Manage Events</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "coordinator_dashboard" %}"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url "manage_events" %}">manage events</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="col-sm-12">
+          <div class="card">
+              <div class="card-header">
+                <h1>Event Report: {{ report.event.title }}</h1>
+        <p><strong>Date:</strong> {{ report.event.date }}</p>
+        <p><strong>Location:</strong> {{ report.event.location }}</p>
+        <p><strong>Description:</strong> {{ report.event.description }}</p>
 
-<h3>Awards and Results</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>First Prize</th>
-            <th>Second Prize</th>
-            <th>Third Prize</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in report.results %}
-            <tr>
-                <td>{{ result.title }}</td>
-                <td>{{ result.first_prize }}</td>
-                <td>{{ result.second_prize }}</td>
-                <td>{{ result.third_prize }}</td>
-                <td>{{ result.date }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">No results available for this event.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <hr>
 
-<h3>Certificates Issued</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Student</th>
-            <th>Certificate Type</th>
-            <th>Status</th>
-            <th>Issued By</th>
-            <th>Issue Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for certificate in report.certificates %}
-            <tr>
-                <td>{{ certificate.student.full_name }}</td>
-                <td>{{ certificate.certificate_type }}</td>
-                <td>{{ certificate.status }}</td>
-                <td>{{ certificate.approved_by.username if certificate.approved_by else "N/A" }}</td>
-                <td>{{ certificate.issue_date }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">No certificates issued for this event.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <!-- Results Section -->
+        <h2>Results</h2>
+        {% if report.results %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Winner</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in report.results %}
+                        <tr>
+                            <td>1st Prize: {{ result.first_prize.full_name }}</td>
+                           
+                            <td>{{ result.date }}</td>
+                        </tr>
+                        <tr>
+                        
+                            <td>2nd Prize: {{ result.second_prize.full_name }}</td>
+                            
+                            <td>{{ result.date }}</td>
+                        </tr>
+                        <tr>
+                        
+                            <td>3rd Prize: {{ result.third_prize.full_name }}</td>
+                            <td>{{ result.date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No results available for this event.</p>
+        {% endif %}
 
-<h3>Achievements</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Student</th>
-            <th>Achievement Type</th>
-            <th>Description</th>
-            <th>Date Achieved</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for achievement in report.achievements %}
-            <tr>
-                <td>{{ achievement.student.full_name }}</td>
-                <td>{{ achievement.achievement_type }}</td>
-                <td>{{ achievement.description }}</td>
-                <td>{{ achievement.date_achieved }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="4">No achievements recorded for this event.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <hr>
+
+        <!-- Certificates Section -->
+        <h2>Certificates</h2>
+        {% if report.certificates %}
+            <ul>
+                {% for certificate in report.certificates %}
+                    <li>
+                        <a href="{{ certificate.file_url }}" target="_blank">{{ certificate.student.full_name }} - Certificate</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No certificates available for this event.</p>
+        {% endif %}
+
+        <hr>
+
+        <!-- Achievements Section -->
+        <h2>Achievements</h2>
+        {% if report.achievements %}
+            <ul>
+                {% for achievement in report.achievements %}
+                    <li>{{ achievement.student.full_name }} - {{ achievement.description }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No achievements recorded for this event.</p>
+        {% endif %}
+          </div> 
+      </div> 
+        <!-- Main Content Goes Here -->
+
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+<script>
+    function confirmDelete(button) {
+        const confirmAction = confirm("Are you sure you want to delete this coordinator?");
+        if (confirmAction) {
+            // If the user confirms, submit the form
+            button.closest('form').submit();
+        }
+    }
+    </script>
+
+    <script src="{% static "https://code.jquery.com/jquery-3.5.1.min.js" %} "></script>
+    <script src="{% static " https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" %} "></script>
+{% endblock content %}

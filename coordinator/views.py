@@ -11,7 +11,7 @@ from coordinator.forms import  SportEventForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from coordinator.models import Achievement, Certificate, House, MatchFixture, Result
+from coordinator.models import Achievement, Certificate, EventReport, House, MatchFixture, Result
 from coordinator.utils import generate_certificate, generate_report
 from core.models import CoreStudent
 from student.models import EventRegistration
@@ -503,13 +503,16 @@ def generate_event_report(request, event_id):
     # Get the event
     event = get_object_or_404(SportEvent, id=event_id)
 
-    # Get results for the event
-    results = Result.objects.filter(sport_event=event)
+    # Get results for the event and retrieve student names
+    results = Result.objects.filter(sport_event_id=event.id)
+    for result in results:
+        # Fetch the full name for each prize-winner by student ID, handling missing students
+        result.first_prize_name = CoreStudent.objects.filter(id=result.first_prize).first().full_name if result.first_prize else "N/A"
+        result.second_prize_name = CoreStudent.objects.filter(id=result.second_prize).first().full_name if result.second_prize else "N/A"
+        result.third_prize_name = CoreStudent.objects.filter(id=result.third_prize).first().full_name if result.third_prize else "N/A"
 
-    # Get certificates for the event
+    # Get certificates and achievements for the event
     certificates = Certificate.objects.filter(event=event)
-
-    # Get achievements for the participants of the event
     student_ids = EventRegistration.objects.filter(event=event).values_list('student', flat=True)
     achievements = Achievement.objects.filter(student__in=student_ids)
 
@@ -524,25 +527,3 @@ def generate_event_report(request, event_id):
     return render(request, 'coordinator/event_report.html', {'report': report_data})
 
 
-def generate_report_view(request, event_id):
-    event = get_object_or_404(SportEvent, id=event_id)
-
-    # Generate the report PDF
-    pdf = generate_event_report(event)
-
-    # Create the response
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="report_{event.title}.pdf"'
-    return response
-
-def report_view(request, event_id):
-    # Correctly retrieve the SportEvent instance
-    event = get_object_or_404(SportEvent, id=event_id)
-
-    # Generate the report PDF
-    pdf = generate_report(event)
-
-    # Create the response
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="report_{event.title}.pdf"'
-    return response

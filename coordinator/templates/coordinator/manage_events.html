@@ -54,7 +54,7 @@
                                         </td>
                                         <td>
                                             {% if event.result_set.exists %}  <!-- Check if winners have been selected -->
-                                                <a href="{% url 'generate_report' event.id %}" class="btn btn-primary">Generate Report</a>
+                                                <a href="{% url 'generate_report' event.id %}" class="btn btn-primary">Generate Reports</a>
                                             {% elif event.sport_type == "Sports" %}
                                                 <a href="{% url 'match_fixture' event.id %}" class="btn btn-primary">Generate Fixture</a>
                                             {% else %}
@@ -62,7 +62,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{% url 'generate_report' event.id %}" class="btn btn-success">Generate Report</a>
+                                            <a href="{% url 'generate_event_report' event.id %}" class="btn btn-success">Generate Report</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
